@@ -1,0 +1,19 @@
+{"ts": "2026-03-01T09:00:00+08:00", "step": {"index": 1, "id": "a-clarify"}, "type": "step.started", "summary": "开始需求澄清", "links": ["brief.md", "decisions.md"]}
+{"ts": "2026-03-01T09:20:00+08:00", "step": {"index": 1, "id": "a-clarify"}, "type": "step.done", "summary": "需求澄清完成", "links": ["steps/01-a-clarify/output.md"]}
+{"ts": "2026-03-01T09:30:00+08:00", "step": {"index": 2, "id": "b-plan"}, "type": "step.started", "summary": "开始规划拆解", "links": ["steps/01-a-clarify/output.md"]}
+{"ts": "2026-03-01T10:00:00+08:00", "step": {"index": 2, "id": "b-plan"}, "type": "workflow.updated", "summary": "输出 3 个工作项队列", "links": ["steps/02-b-plan/output.md", "workflow.yaml"]}
+{"ts": "2026-03-01T10:05:00+08:00", "step": {"index": 2, "id": "b-plan"}, "type": "step.done", "summary": "规划完成", "links": ["steps/02-b-plan/output.md"]}
+{"ts": "2026-03-01T10:10:00+08:00", "step": {"index": 3, "id": "auth-core-implement"}, "type": "step.started", "summary": "开始实现 auth-core", "workItemId": "auth-core", "links": ["steps/03-auth-core-implement/output.md"]}
+{"ts": "2026-03-01T11:00:00+08:00", "step": {"index": 3, "id": "auth-core-implement"}, "type": "step.done", "summary": "auth-core 实现完成", "workItemId": "auth-core", "links": ["steps/03-auth-core-implement/output.md"]}
+{"ts": "2026-03-01T11:10:00+08:00", "step": {"index": 4, "id": "auth-core-test"}, "type": "verify.passed", "summary": "auth-core 测试通过", "workItemId": "auth-core", "links": ["steps/04-auth-core-test/output.md"]}
+{"ts": "2026-03-01T11:20:00+08:00", "step": {"index": 5, "id": "auth-core-accept"}, "type": "accept.passed", "summary": "auth-core 验收通过", "workItemId": "auth-core", "links": ["steps/05-auth-core-accept/output.md"]}
+{"ts": "2026-03-01T11:30:00+08:00", "step": {"index": 6, "id": "auth-session-implement"}, "type": "step.started", "summary": "开始实现 auth-session", "workItemId": "auth-session", "links": ["steps/06-auth-session-implement/output.md"]}
+{"ts": "2026-03-01T12:10:00+08:00", "step": {"index": 6, "id": "auth-session-implement"}, "type": "step.done", "summary": "auth-session 实现完成", "workItemId": "auth-session", "links": ["steps/06-auth-session-implement/output.md"]}
+{"ts": "2026-03-01T12:20:00+08:00", "step": {"index": 7, "id": "auth-session-test"}, "type": "verify.passed", "summary": "auth-session 测试通过", "workItemId": "auth-session", "links": ["steps/07-auth-session-test/output.md"]}
+{"ts": "2026-03-01T12:30:00+08:00", "step": {"index": 8, "id": "auth-session-accept"}, "type": "accept.passed", "summary": "auth-session 验收通过", "workItemId": "auth-session", "links": ["steps/08-auth-session-accept/output.md"]}
+{"ts": "2026-03-01T12:40:00+08:00", "step": {"index": 9, "id": "auth-hardening-implement"}, "type": "step.started", "summary": "开始实现 auth-hardening", "workItemId": "auth-hardening", "links": ["steps/09-auth-hardening-implement/output.md"]}
+{"ts": "2026-03-01T13:10:00+08:00", "step": {"index": 9, "id": "auth-hardening-implement"}, "type": "step.done", "summary": "auth-hardening 文档与清单完成", "workItemId": "auth-hardening", "links": ["steps/09-auth-hardening-implement/output.md"]}
+{"ts": "2026-03-01T13:20:00+08:00", "step": {"index": 10, "id": "auth-hardening-test"}, "type": "verify.passed", "summary": "auth-hardening 检查通过", "workItemId": "auth-hardening", "links": ["steps/10-auth-hardening-test/output.md"]}
+{"ts": "2026-03-01T13:30:00+08:00", "step": {"index": 11, "id": "auth-hardening-accept"}, "type": "accept.passed", "summary": "auth-hardening 验收通过", "workItemId": "auth-hardening", "links": ["steps/11-auth-hardening-accept/output.md"]}
+{"ts": "2026-03-01T13:40:00+08:00", "step": {"index": 12, "id": "b-summary"}, "type": "artifact.updated", "summary": "输出总结", "links": ["steps/12-b-summary/output.md"]}
+{"ts": "2026-03-01T13:45:00+08:00", "step": {"index": 12, "id": "b-summary"}, "type": "step.done", "summary": "流程结束", "links": ["steps/12-b-summary/output.md"]}

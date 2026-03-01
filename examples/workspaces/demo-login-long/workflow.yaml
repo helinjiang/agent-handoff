@@ -1,0 +1,75 @@
+name: demo-login-long
+steps:
+  - id: a-clarify
+    executor: trae
+    input: brief.md
+    output: steps/01-a-clarify/output.md
+    acceptance:
+      - 澄清关键问题并冻结本轮范围/非目标
+
+  - id: b-plan
+    executor: trae
+    input: steps/01-a-clarify/output.md
+    output: steps/02-b-plan/output.md
+    acceptance:
+      - 拆分 3 个工作项（auth-core/auth-session/auth-hardening）
+      - 为每个工作项给出 implement/test/accept 验收点
+
+  - id: auth-core-implement
+    workItemId: auth-core
+    executor: trae
+    input: steps/02-b-plan/output.md
+    output: steps/03-auth-core-implement/output.md
+
+  - id: auth-core-test
+    workItemId: auth-core
+    executor: trae
+    input: steps/03-auth-core-implement/output.md
+    output: steps/04-auth-core-test/output.md
+
+  - id: auth-core-accept
+    workItemId: auth-core
+    executor: trae
+    input: steps/04-auth-core-test/output.md
+    output: steps/05-auth-core-accept/output.md
+
+  - id: auth-session-implement
+    workItemId: auth-session
+    executor: trae
+    input: steps/05-auth-core-accept/output.md
+    output: steps/06-auth-session-implement/output.md
+
+  - id: auth-session-test
+    workItemId: auth-session
+    executor: trae
+    input: steps/06-auth-session-implement/output.md
+    output: steps/07-auth-session-test/output.md
+
+  - id: auth-session-accept
+    workItemId: auth-session
+    executor: trae
+    input: steps/07-auth-session-test/output.md
+    output: steps/08-auth-session-accept/output.md
+
+  - id: auth-hardening-implement
+    workItemId: auth-hardening
+    executor: trae
+    input: steps/08-auth-session-accept/output.md
+    output: steps/09-auth-hardening-implement/output.md
+
+  - id: auth-hardening-test
+    workItemId: auth-hardening
+    executor: trae
+    input: steps/09-auth-hardening-implement/output.md
+    output: steps/10-auth-hardening-test/output.md
+
+  - id: auth-hardening-accept
+    workItemId: auth-hardening
+    executor: trae
+    input: steps/10-auth-hardening-test/output.md
+    output: steps/11-auth-hardening-accept/output.md
+
+  - id: b-summary
+    executor: trae
+    input: steps/11-auth-hardening-accept/output.md
+    output: steps/12-b-summary/output.md
