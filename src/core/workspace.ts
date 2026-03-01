@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Workflow } from './models/workflow';
-import { State } from './models/state';
-import { parseWorkflow } from './workflow-parser';
+import { Workflow } from './models/workflow.js';
+import { State } from './models/state.js';
+import { parseWorkflow } from './workflow-parser.js';
 
 export interface WorkspaceInfo {
   path: string;
@@ -18,14 +18,14 @@ export async function loadWorkspace(workspacePath: string): Promise<WorkspaceInf
   const absolutePath = path.resolve(workspacePath);
   const workflowPath = path.join(absolutePath, 'workflow.yaml');
   const statePath = path.join(absolutePath, 'state.json');
-  
+
   let exists = false;
   let hasWorkflow = false;
   let hasState = false;
   let workflow: Workflow | undefined;
   let state: State | undefined;
   let stepOutputs = new Map<string, boolean>();
-  
+
   try {
     await fs.access(absolutePath);
     exists = true;
@@ -38,7 +38,7 @@ export async function loadWorkspace(workspacePath: string): Promise<WorkspaceInf
       stepOutputs,
     };
   }
-  
+
   try {
     await fs.access(workflowPath);
     hasWorkflow = true;
@@ -46,7 +46,7 @@ export async function loadWorkspace(workspacePath: string): Promise<WorkspaceInf
   } catch {
     hasWorkflow = false;
   }
-  
+
   try {
     const stateContent = await fs.readFile(statePath, 'utf-8');
     hasState = true;
@@ -54,11 +54,11 @@ export async function loadWorkspace(workspacePath: string): Promise<WorkspaceInf
   } catch {
     hasState = false;
   }
-  
+
   if (workflow) {
     stepOutputs = await detectStepOutputs(absolutePath, workflow);
   }
-  
+
   return {
     path: absolutePath,
     exists,
@@ -75,7 +75,7 @@ export async function detectStepOutputs(
   workflow: Workflow
 ): Promise<Map<string, boolean>> {
   const outputs = new Map<string, boolean>();
-  
+
   for (const step of workflow.steps) {
     const outputPath = path.join(workspacePath, step.output);
     try {
@@ -85,7 +85,7 @@ export async function detectStepOutputs(
       outputs.set(step.id, false);
     }
   }
-  
+
   return outputs;
 }
 
