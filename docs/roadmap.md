@@ -12,7 +12,7 @@
 | v0.2 | 增强 | validation + clipboard + events.jsonl 规范化 | ✅ 完成 |
 | v0.3 | 自动化 | TRAE UI 自动化 adapter（可选） | ✅ 完成 |
 | v0.4 | 可视化 | Web Timeline Viewer（静态导出） | ✅ 完成 |
-| v0.5 | 扩展 | 多 workspace 索引、搜索、diff | 💡 设想中 |
+| v0.5 | 扩展 | 多 workspace 索引、搜索、diff、统计 | ✅ 完成 |
 
 ---
 

@@ -254,7 +254,7 @@ Web Viewer（v0.4 已实现）：
 - v0.2：validation + clipboard + events.jsonl 规范化
 - v0.3：TRAE UI 自动化 adapter（可选）
 - v0.4：Web Timeline Viewer（静态导出）
-- v0.5：多 workspace 索引、搜索、diff
+- v0.5：多 workspace 索引、搜索、diff、统计
 
 
 ## 12. 与 OpenClaw 的边界
