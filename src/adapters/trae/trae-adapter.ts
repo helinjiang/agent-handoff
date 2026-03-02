@@ -6,6 +6,8 @@ import { ScreenFinder } from './screen-finder';
 import { AutoInput } from './auto-input';
 import { OperationLogger } from './operation-logger';
 import { TaskWaiter } from './task-waiter';
+import { AutomationError, ErrorRecovery } from './error-recovery';
+import { FallbackHandler } from './fallback-handler';
 
 type NutJsModule = {
   mouse: unknown;
@@ -102,6 +104,14 @@ export class TraeAdapter extends BaseAdapter {
       };
     }
 
+    if (!this._appManager) {
+      return {
+        success: false,
+        error: 'AppManager not available',
+        duration: Date.now() - startTime,
+      };
+    }
+
     const operationLogger = new OperationLogger({
       workspacePath: options?.workspacePath ?? '',
       stepId: options?.stepId ?? '',
@@ -112,13 +122,46 @@ export class TraeAdapter extends BaseAdapter {
       ? path.join(options.workspacePath, this._traeConfig.screenshotDir)
       : undefined;
 
+    const diagnosticsDir = options?.workspacePath ? path.join(options.workspacePath, 'diagnostics') : undefined;
+    const errorRecovery = new ErrorRecovery(
+      { nutjs: this._nutjs, appManager: this._appManager, screenFinder: this._screenFinder },
+      { diagnosticsDir }
+    );
+    const fallbackHandler = new FallbackHandler();
+
     const autoInput = new AutoInput(this._nutjs, this._screenFinder, operationLogger);
-    const result = await autoInput.execute({
+
+    let result = await autoInput.execute({
       prompt,
       timeout: options?.timeout ?? this._traeConfig.timeout,
       screenshot: screenshotEnabled,
       screenshotDir,
     });
+
+    let diagnosticsPath: string | undefined;
+
+    if (!result.success) {
+      const baseError = new Error(result.error ?? 'unknown');
+      const recoveryResult = await errorRecovery.handle(baseError);
+      diagnosticsPath = recoveryResult.diagnosticsPath;
+
+      if (recoveryResult.recovered) {
+        result = await autoInput.execute({
+          prompt,
+          timeout: options?.timeout ?? this._traeConfig.timeout,
+          screenshot: screenshotEnabled,
+          screenshotDir,
+        });
+      }
+
+      if (!result.success) {
+        const autoError =
+          recoveryResult.finalError ?? AutomationError.fromError(baseError, { timestamp: Date.now() });
+        const fallback = await fallbackHandler.handle(autoError, prompt);
+        const msg = diagnosticsPath ? `${fallback.message}\n\n🧾 Diagnostics: ${diagnosticsPath}` : fallback.message;
+        result = { ...result, error: msg };
+      }
+    }
 
     if (result.success && options?.wait) {
       if (!this._taskWaiter) {

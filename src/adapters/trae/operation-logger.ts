@@ -104,6 +104,8 @@ export class OperationLogger {
         sessionId: this.sessionId,
         operations: this.operations.length,
         screenshots: this.screenshots.length,
+        status: this.status,
+        error: this.error,
       },
     });
   }
