@@ -1,7 +1,11 @@
+import path from 'path';
 import { AdapterResult, AdapterType, BaseAdapter, ExecuteOptions } from '../base';
 import { DEFAULT_TRAE_CONFIG, TraeConfig } from './config';
 import { AppManager } from './app-manager';
 import { ScreenFinder } from './screen-finder';
+import { AutoInput } from './auto-input';
+import { OperationLogger } from './operation-logger';
+import { TaskWaiter } from './task-waiter';
 
 type NutJsModule = {
   mouse: unknown;
@@ -25,6 +29,9 @@ export class TraeAdapter extends BaseAdapter {
   private _importNutJs: NutJsImporter;
   private _screenFinder: ScreenFinder | null = null;
   private _appManager: AppManager | null = null;
+  private _operationLogger: OperationLogger | null = null;
+  private _autoInput: AutoInput | null = null;
+  private _taskWaiter: TaskWaiter | null = null;
 
   constructor(config: Partial<TraeConfig> = {}, nutJsImporter: NutJsImporter = defaultNutJsImporter) {
     super('trae', {
@@ -89,11 +96,45 @@ export class TraeAdapter extends BaseAdapter {
       };
     }
 
-    void prompt;
-    void options;
+    if (!this._screenFinder || !this._nutjs) {
+      return {
+        success: false,
+        error: 'ScreenFinder not available',
+        duration: Date.now() - startTime,
+      };
+    }
+
+    if (!this._operationLogger) {
+      this._operationLogger = new OperationLogger();
+    }
+
+    if (!this._autoInput) {
+      this._autoInput = new AutoInput(this._nutjs, this._screenFinder, this._operationLogger);
+    }
+
+    const screenshotEnabled = options?.screenshot ?? this._traeConfig.screenshot;
+    const screenshotDir = options?.workspacePath
+      ? path.join(options.workspacePath, this._traeConfig.screenshotDir)
+      : undefined;
+
+    const result = await this._autoInput.execute({
+      prompt,
+      timeout: options?.timeout ?? this._traeConfig.timeout,
+      screenshot: screenshotEnabled,
+      screenshotDir,
+    });
+
+    if (result.success && options?.wait) {
+      if (!this._taskWaiter) {
+        this._taskWaiter = new TaskWaiter(this._screenFinder);
+      }
+      await this._taskWaiter.waitForCompletion(options?.waitTimeoutMs);
+    }
 
     return {
-      success: true,
+      success: result.success,
+      error: result.error,
+      screenshot: result.screenshots[0],
       duration: Date.now() - startTime,
     };
   }
@@ -102,6 +143,9 @@ export class TraeAdapter extends BaseAdapter {
     this._nutjs = null;
     this._screenFinder = null;
     this._appManager = null;
+    this._operationLogger = null;
+    this._autoInput = null;
+    this._taskWaiter = null;
     this._initialized = false;
   }
 }

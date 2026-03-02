@@ -12,6 +12,8 @@ export interface ExecuteOptions {
   stepId?: string;
   screenshot?: boolean;
   timeout?: number;
+  wait?: boolean;
+  waitTimeoutMs?: number;
 }
 
 export interface AdapterResult {
@@ -79,4 +81,3 @@ export abstract class BaseAdapter implements Adapter {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
-
