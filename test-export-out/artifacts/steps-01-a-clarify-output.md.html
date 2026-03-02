@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>steps/01-a-clarify/output.md</title>
+<style>
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial; color: #111827; background: #ffffff; }
+.container { max-width: 1040px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 18px; margin: 0 0 8px; }
+.path { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; color: #374151; }
+pre { margin-top: 16px; background: #0b1020; color: #e5e7eb; padding: 12px; border-radius: 10px; overflow: auto; font-size: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>steps/01-a-clarify/output.md</h1>
+<div class="path">steps/01-a-clarify/output.md</div>
+<pre># A-clarify 输出：需求澄清与补充
+
+## 澄清问题（已假设答案，用于示例）
+1. 是否需要注册？——需要（最小注册 API）。
+2. 登录标识用 email 还是 username？——用 email。
+3. 会话策略：Session Cookie 还是 JWT？——选 Session Cookie（HTTP-only）。
+4. 是否需要“记住我/长会话”？——本轮不做，默认短会话即可。
+5. 是否需要刷新 token / CSRF 防护？——本轮仅做最小安全：HTTP-only cookie + CORS/同站策略提示；CSRF 作为后续增强项。
+6. 需要前端页面吗？——不需要，API 即可（可给 curl 示例）。
+
+## 范围与非目标（补充）
+- 范围：注册、登录、登出、受保护接口示例；密码哈希存储；最小测试或验收脚本。
+- 非目标：OAuth/MFA/RBAC/完整前端 UI/复杂会话管理/限流与风控（后续）。
+
+## 产物更新
+- 建议在 brief 中补充：接口清单、错误码策略、环境变量配置方式。
+- 建议在 decisions 中补充：cookie 选项（httpOnly/secure/sameSite）、session 存储（内存/redis）。
+
+## 关键决策
+- 维持 Session Cookie：实现简单、撤销友好；后续可替换 JWT。
+- 错误信息统一：避免暴露“用户不存在/密码错误”。
+
+## 风险与待确认
+- 生产环境 session 存储建议使用 Redis；本示例可用内存 store。
+- CSRF/同站策略需要在有前端页面后再系统性补齐。
+
+## 下一步交接
+- 交给 B：请把本需求拆成 2-4 个可独立验收的工作项，并生成步骤队列（带 workItemId）。
+- 输入：brief.md + decisions.md + 本文件
+- 输出：steps/02-b-plan/output.md（含工作项拆解、验收标准、建议更新 workflow.yaml）
+</pre>
+</div>
+</body>
+</html>

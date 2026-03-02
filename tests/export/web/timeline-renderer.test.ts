@@ -35,6 +35,7 @@ describe('timeline-renderer', () => {
       workspaceName: 'demo',
       generatedAt: '2026-03-02T00:00:00.000Z',
       includeAssets: false,
+      linkHrefMap: { 'steps/01-a/output.md': 'artifacts/steps-01-a-output.md.html' },
       items: [
         {
           ts: '2026-03-01T00:00:01.000Z',
@@ -51,6 +52,7 @@ describe('timeline-renderer', () => {
 
     expect(result.html).toContain('automation.session');
     expect(result.html).toContain('steps/01-a/output.md');
+    expect(result.html).toContain('href="artifacts/steps-01-a-output.md.html"');
     expect(result.html).toContain('<details>');
     expect(result.html).toContain('&quot;ok&quot;: true');
     expect(result.assets).toEqual({});

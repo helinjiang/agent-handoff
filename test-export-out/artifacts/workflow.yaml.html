@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>workflow.yaml</title>
+<style>
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial; color: #111827; background: #ffffff; }
+.container { max-width: 1040px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 18px; margin: 0 0 8px; }
+.path { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; color: #374151; }
+pre { margin-top: 16px; background: #0b1020; color: #e5e7eb; padding: 12px; border-radius: 10px; overflow: auto; font-size: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>workflow.yaml</h1>
+<div class="path">workflow.yaml</div>
+<pre>name: demo-login
+steps:
+  - id: a-clarify
+    executor: trae
+    input: brief.md
+    output: steps/01-a-clarify/output.md
+    acceptance:
+      - 补齐需求澄清问题与明确范围/非目标
+      - 产出可执行的 brief+decisions 补充建议
+
+  - id: b-plan
+    executor: trae
+    input: steps/01-a-clarify/output.md
+    output: steps/02-b-plan/output.md
+    acceptance:
+      - 拆分为 2-4 个可独立验收的工作项（work items）
+      - 给出步骤队列（workflow 更新建议）与每项验收点
+
+  - id: login-implement
+    workItemId: login
+    executor: trae
+    input: steps/02-b-plan/output.md
+    output: steps/03-login-implement/output.md
+    acceptance:
+      - 实现注册/登录/登出/受保护接口（API）
+      - 密码哈希存储与基础校验
+
+  - id: login-test
+    workItemId: login
+    executor: trae
+    input: steps/03-login-implement/output.md
+    output: steps/04-login-test/output.md
+    acceptance:
+      - 提供可运行的最小测试或手工验收脚本
+      - 覆盖成功/失败路径
+
+  - id: login-accept
+    workItemId: login
+    executor: trae
+    input: steps/04-login-test/output.md
+    output: steps/05-login-accept/output.md
+    acceptance:
+      - 验收通过或给出明确未通过原因与修复建议
+
+  - id: b-summary
+    executor: trae
+    input: steps/05-login-accept/output.md
+    output: steps/06-b-summary/output.md
+    acceptance:
+      - 输出总结（变更点、如何运行、后续建议）
+</pre>
+</div>
+</body>
+</html>

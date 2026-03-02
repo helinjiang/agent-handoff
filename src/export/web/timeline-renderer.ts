@@ -6,6 +6,7 @@ export interface RenderWebTimelineOptions {
   generatedAt: string;
   items: TimelineItem[];
   includeAssets: boolean;
+  linkHrefMap?: Record<string, string>;
 }
 
 export interface RenderWebTimelineResult {
@@ -22,11 +23,13 @@ function escapeHtml(input: string): string {
     .replaceAll("'", '&#39;');
 }
 
-function renderLinks(links: string[]): string {
+function renderLinks(links: string[], linkHrefMap?: Record<string, string>): string {
   const items = links
     .map((link) => {
-      const safe = escapeHtml(link);
-      return `<a href="${safe}" data-link="${safe}" target="_blank" rel="noopener noreferrer">${safe}</a>`;
+      const href = linkHrefMap && linkHrefMap[link] ? linkHrefMap[link] : link;
+      const safeLabel = escapeHtml(link);
+      const safeHref = escapeHtml(href);
+      return `<a href="${safeHref}" data-link="${safeLabel}" target="_blank" rel="noopener noreferrer">${safeLabel}</a>`;
     })
     .join('');
   return `<div class="links">${items}</div>`;
@@ -65,7 +68,8 @@ export function renderWebTimeline(options: RenderWebTimelineOptions): RenderWebT
 
       const workItem = item.workItemId ? `<span class="badge">${escapeHtml(item.workItemId)}</span>` : '';
 
-      const links = item.links && item.links.length > 0 ? renderLinks(item.links) : '';
+      const links =
+        item.links && item.links.length > 0 ? renderLinks(item.links, options.linkHrefMap) : '';
       const data = item.data ? renderData(item.data) : '';
 
       return [
@@ -149,4 +153,3 @@ function getDefaultJs(): string {
     '',
   ].join('\n');
 }
-

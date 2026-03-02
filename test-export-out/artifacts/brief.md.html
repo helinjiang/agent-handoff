@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>brief.md</title>
+<style>
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial; color: #111827; background: #ffffff; }
+.container { max-width: 1040px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 18px; margin: 0 0 8px; }
+.path { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; color: #374151; }
+pre { margin-top: 16px; background: #0b1020; color: #e5e7eb; padding: 12px; border-radius: 10px; overflow: auto; font-size: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>brief.md</h1>
+<div class="path">brief.md</div>
+<pre># brief：为现有项目增加登录能力
+
+## 背景
+现有项目尚未支持登录/鉴权。希望新增一套基础登录能力，便于后续扩展权限与用户体系。
+
+## 目标（本轮）
+- 支持用户名/密码登录（email + password 也可）
+- 登录成功后保存会话（Session 或 JWT）
+- 提供登出能力
+- 提供受保护接口示例（需要登录才能访问）
+
+## 技术栈约束
+- Node.js 服务端（示例以 Express + TypeScript 描述）
+- 数据库可用 SQLite/Postgres（示例以 Postgres 思路描述，允许替换）
+
+## 安全与质量要求
+- 密码必须安全存储（哈希+盐）
+- 基础防护：输入校验、错误信息不要泄露敏感细节
+- 提供最小可用测试（单测或集成测试二选一）
+
+## 非目标（本轮不做）
+- OAuth/第三方登录（Google/GitHub 等）
+- 多因素认证（MFA）
+- 复杂 RBAC/ACL（后续再做）
+- 完整前端 UI（可只提供 API）
+
+## 验收标准
+- 能在本地跑起来：注册/登录/登出/受保护接口
+- 文档说明清楚（如何配置与调用）
+</pre>
+</div>
+</body>
+</html>

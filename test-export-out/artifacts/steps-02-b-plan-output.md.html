@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>steps/02-b-plan/output.md</title>
+<style>
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial; color: #111827; background: #ffffff; }
+.container { max-width: 1040px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 18px; margin: 0 0 8px; }
+.path { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; color: #374151; }
+pre { margin-top: 16px; background: #0b1020; color: #e5e7eb; padding: 12px; border-radius: 10px; overflow: auto; font-size: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>steps/02-b-plan/output.md</h1>
+<div class="path">steps/02-b-plan/output.md</div>
+<pre># B-plan 输出：工作项拆解与步骤队列
+
+## 工作项（Work Items）拆解（本示例采用 1 个工作项）
+为保持示例最小闭环，本轮先只做 1 个工作项：
+
+- workItemId: **login**
+- 交付内容：注册/登录/登出/受保护接口 + 最小测试 + 文档
+- 验收：本地可跑通 + 失败路径覆盖 + 不泄露敏感信息
+
+&gt; 如果要拆成 2-3 个工作项（更贴近真实）：
+&gt; - auth-core（用户模型/密码哈希/注册）
+&gt; - auth-session（session/cookie/登录登出/保护路由）
+&gt; - auth-tests（测试与文档）
+&gt; 但此处为演示简化为 login 一个 work item。
+
+## 步骤队列（建议）
+1. login-implement（C）：实现 API 与会话逻辑
+2. login-test（D）：验证/测试
+3. login-accept（B）：验收与必要修正（不通过则插入 fix）
+4. b-summary（B）：总结
+
+## 验收点（Acceptance）
+### login-implement
+- 注册：POST /auth/register
+- 登录：POST /auth/login（成功 set-cookie）
+- 登出：POST /auth/logout（清 session）
+- 保护接口：GET /me（需要登录）
+- 密码：bcrypt 哈希存储
+- 错误：统一登录失败信息
+
+### login-test
+- 成功路径：注册→登录→访问 /me→登出→/me 失败
+- 失败路径：错误密码登录失败；未登录访问 /me 失败
+
+### login-accept
+- 核对非目标未引入（OAuth/MFA）
+- 核对 docs/README 或 steps 输出里有运行说明与 curl 示例
+
+## 产物更新
+- workflow.yaml：已包含 workItemId: login 的 steps（本示例已写入）
+
+## 关键决策
+- 保持线性链：实现→测试→验收→总结；若失败则插入 fix，而不是引入分支。
+
+## 风险与待确认
+- 真实项目的框架不一定是 Express；本示例以 Express 描述，实际可映射到 NestJS/Koa。
+- 数据库与 ORM 选型可替换；本示例提供接口级契约与最小表结构。
+
+## 下一步交接
+- 交给 C：实现 login-implement。
+- 输入：本文件的验收点 + decisions.md
+- 输出：steps/03-login-implement/output.md（包含：API 设计、关键代码结构、运行说明、curl 示例）
+</pre>
+</div>
+</body>
+</html>
