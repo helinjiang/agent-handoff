@@ -32,6 +32,49 @@ h1 {
   color: #6b7280;
 }
 
+.filters {
+  margin: 12px 0 16px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.filters-row input,
+.filters-row select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  background: #fff;
+}
+
+.filters-row button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+}
+
+.filters-row button:hover {
+  background: #f3f4f6;
+}
+
+.filters-meta {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -114,4 +157,3 @@ pre {
   font-size: 12px;
   line-height: 1.5;
 }
-

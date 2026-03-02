@@ -26,7 +26,13 @@ describe('timeline-renderer', () => {
     expect(result.assets['assets/viewer.css']).toBeDefined();
     expect(result.assets['assets/viewer.js']).toBeDefined();
     expect(result.html).toContain('id="__EVENTS__"');
+    expect(result.html).toContain('id="__LINK_HREF_MAP__"');
     expect(result.html).toContain('timeline-list');
+    expect(result.html).toContain('filter-q');
+    expect(result.html).toContain('filter-step');
+    expect(result.html).toContain('filter-type');
+    expect(result.html).toContain('filter-workItem');
+    expect(result.html).toContain('filter-clear');
   });
 
   it('should render links and data blocks', () => {
