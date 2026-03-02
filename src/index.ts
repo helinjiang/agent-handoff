@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import { initCommand } from './cli/commands/init.js';
 import { statusCommand } from './cli/commands/status.js';
 import { nextCommand } from './cli/commands/next.js';
+import { validateCommand } from './cli/commands/validate.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json');
@@ -18,5 +19,6 @@ program
 program.addCommand(initCommand);
 program.addCommand(statusCommand);
 program.addCommand(nextCommand);
+program.addCommand(validateCommand);
 
 program.parse();
