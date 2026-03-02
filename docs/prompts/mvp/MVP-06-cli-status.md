@@ -11,7 +11,7 @@
 - MVP-04 的状态机功能
 
 参考示例：
-- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/`
+- `examples/workspaces/demo-login/`
 
 ## 产物清单
 

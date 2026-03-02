@@ -16,6 +16,28 @@
 
 ---
 
+## 文档规范
+
+### 文件路径引用
+
+**必须使用相对路径**，禁止使用绝对路径。
+
+```markdown
+# ✅ 正确
+- 参考：`docs/protocol.md`
+- 示例：`examples/workspaces/demo-login/`
+
+# ❌ 错误
+- 参考：`/Users/xxx/workspace/agent-handoff/docs/protocol.md`
+```
+
+原因：
+- 绝对路径暴露本机用户信息
+- 绝对路径在其他开发者机器上无效
+- 相对路径更通用、更安全
+
+---
+
 ## 统一输出规范（强制）
 
 每个 Step 结束时必须：

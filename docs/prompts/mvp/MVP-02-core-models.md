@@ -7,10 +7,10 @@
 ## 上下文
 
 参考文档：
-- `/Users/bytedance/workspace/gitforgithub/agent-handoff/docs/protocol.md`
-- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/workflow.yaml`
-- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/state.json`
-- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/events.jsonl`
+- `docs/protocol.md`
+- `examples/workspaces/demo-login/workflow.yaml`
+- `examples/workspaces/demo-login/state.json`
+- `examples/workspaces/demo-login/events.jsonl`
 
 ## 产物清单
 

@@ -7,7 +7,7 @@
 ## 上下文
 
 参考文档：
-- `/Users/bytedance/workspace/gitforgithub/agent-handoff/docs/protocol.md` 第 2.2 节
+- `docs/protocol.md` 第 2.2 节
 
 状态推进规则：
 1. 若 `steps[i].output` 不存在或为空 → `currentIndex = i`，`status = running`
