@@ -1,0 +1,90 @@
+import { AdapterResult, AdapterType, BaseAdapter, ExecuteOptions } from '../base';
+import { DEFAULT_TRAE_CONFIG, TraeConfig } from './config';
+
+type NutJsModule = {
+  mouse: unknown;
+  keyboard: { config?: { autoDelayMs?: number } };
+  screen: { config?: { confidence?: number } };
+  imageResource: (path: string) => unknown;
+};
+
+type NutJsImporter = () => Promise<NutJsModule>;
+
+const defaultNutJsImporter: NutJsImporter = async () => {
+  const mod = (await import('@nut-tree/nut-js')) as unknown as NutJsModule;
+  return mod;
+};
+
+export class TraeAdapter extends BaseAdapter {
+  readonly type: AdapterType = 'trae';
+  private _traeConfig: TraeConfig;
+  private _nutjs: NutJsModule | null = null;
+  private _importNutJs: NutJsImporter;
+
+  constructor(config: Partial<TraeConfig> = {}, nutJsImporter: NutJsImporter = defaultNutJsImporter) {
+    super('trae', {
+      enabled: config.enabled ?? DEFAULT_TRAE_CONFIG.enabled,
+      timeout: config.timeout ?? DEFAULT_TRAE_CONFIG.timeout,
+      retries: config.retries ?? DEFAULT_TRAE_CONFIG.retries,
+    });
+    this._traeConfig = { ...DEFAULT_TRAE_CONFIG, ...config };
+    this._importNutJs = nutJsImporter;
+  }
+
+  async initialize(): Promise<void> {
+    if (!this._config.enabled) {
+      return;
+    }
+
+    try {
+      this._nutjs = await this._importNutJs();
+      if (this._nutjs.screen?.config) {
+        this._nutjs.screen.config.confidence = this._traeConfig.confidence;
+      }
+      if (this._nutjs.keyboard?.config) {
+        this._nutjs.keyboard.config.autoDelayMs = this._traeConfig.typingDelay;
+      }
+      this._initialized = true;
+    } catch (error) {
+      throw new Error(`Failed to load Nut.js: ${(error as Error).message}`);
+    }
+  }
+
+  async isReady(): Promise<boolean> {
+    return this._initialized && this._nutjs !== null;
+  }
+
+  async execute(prompt: string, options?: ExecuteOptions): Promise<AdapterResult> {
+    const startTime = Date.now();
+
+    if (!this._config.enabled) {
+      return {
+        success: false,
+        error: 'Adapter is disabled',
+        duration: Date.now() - startTime,
+      };
+    }
+
+    if (!(await this.isReady())) {
+      return {
+        success: false,
+        error: 'Adapter not initialized',
+        duration: Date.now() - startTime,
+      };
+    }
+
+    void prompt;
+    void options;
+
+    return {
+      success: true,
+      duration: Date.now() - startTime,
+    };
+  }
+
+  async cleanup(): Promise<void> {
+    this._nutjs = null;
+    this._initialized = false;
+  }
+}
+

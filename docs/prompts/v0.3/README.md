@@ -25,7 +25,7 @@ V03-01 TRAE Adapter 基础架构
 | 序号 | 任务 | 产物 | 优先级 |
 |------|------|------|--------|
 | [V03-01](./V03-01-trae-adapter.md) | TRAE Adapter 基础架构 | src/adapters/trae/ | P0 |
-| [V03-02](./V03-02-trae-ui-elements.md) | TRAE 界面元素识别 | src/adapters/trae/ui-elements.ts | P0 |
+| [V03-02](./V03-02-trae-visual-elements.md) | TRAE 界面元素识别 | src/adapters/trae/visual-elements.ts | P0 |
 | [V03-03](./V03-03-trae-auto-input.md) | 自动输入 prompt | src/adapters/trae/auto-input.ts | P0 |
 | [V03-04](./V03-04-operation-logger.md) | 操作日志记录 | src/adapters/trae/operation-logger.ts | P1 |
 | [V03-05](./V03-05-error-recovery.md) | 错误恢复与降级 | src/adapters/trae/error-recovery.ts | P1 |
@@ -40,7 +40,7 @@ V03-01 TRAE Adapter 基础架构
    - 实现 TRAE Adapter 基类
 
 2. **V03-02** - TRAE 界面元素识别
-   - 使用 Puppeteer 连接 TRAE
+   - 使用 Nut.js 激活 TRAE 并进行视觉识别
    - 识别关键 UI 元素（新建任务、输入框、提交按钮）
    - 实现元素定位策略
 
@@ -65,7 +65,7 @@ V03-01 TRAE Adapter 基础架构
 
 ### Nut.js (Desktop Automation)
 
-鉴于 TRAE 是桌面 IDE，直接使用 Puppeteer 需要开启远程调试端口（用户体验不佳）。因此 v0.3 采用 **Nut.js** 进行桌面自动化。
+鉴于 TRAE 是桌面 IDE，v0.3 采用 **Nut.js** 进行桌面自动化（键鼠模拟 + 视觉识别），避免引入额外的启动参数与运行时依赖。
 
 原因：
 - **无侵入性** - 不需要以特定参数启动 TRAE
@@ -93,4 +93,4 @@ pnpm add @nut-tree/template-matcher # 图像匹配插件
 - [技术方案](../../TECH_SPEC.md)
 - [路线图](../../roadmap.md)
 - [v0.2 任务清单](../v0.2/README.md)
-- [Puppeteer 文档](https://pptr.dev/)
+- [Nut.js](https://nutjs.dev/)
