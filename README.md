@@ -1,2 +1,3 @@
-# agent-relay
-A lightweight multi-agent collaboration tool that relays tasks across isolated contexts (TRAE-first).
+# AgentHandoff
+
+AgentHandoff is a linear, artifact-driven multi-agent collaboration engine designed for structured handoff and replayable workflows.
