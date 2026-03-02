@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import { initCommand } from './cli/commands/init.js';
 import { statusCommand } from './cli/commands/status.js';
+import { nextCommand } from './cli/commands/next.js';
 
 const program = new Command();
 
@@ -12,5 +13,6 @@ program
 
 program.addCommand(initCommand);
 program.addCommand(statusCommand);
+program.addCommand(nextCommand);
 
 program.parse();
