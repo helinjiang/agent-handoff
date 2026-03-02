@@ -11,6 +11,7 @@ import { reportCommand } from './cli/commands/report.js';
 import { exportCommand } from './cli/commands/export.js';
 import { indexCommand } from './cli/commands/index.js';
 import { searchCommand } from './cli/commands/search.js';
+import { diffCommand } from './cli/commands/diff.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json');
@@ -32,5 +33,6 @@ program.addCommand(reportCommand);
 program.addCommand(exportCommand);
 program.addCommand(indexCommand);
 program.addCommand(searchCommand);
+program.addCommand(diffCommand);
 
 program.parse();
