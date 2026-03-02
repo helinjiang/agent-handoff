@@ -9,14 +9,14 @@
 | 版本 | 主题 | 核心能力 | 状态 |
 |------|------|----------|------|
 | v0.1 | MVP | CLI 基础 + workspace 管理 + TRAE 辅助模式 | ✅ 完成 |
-| v0.2 | 增强 | validation + clipboard + events.jsonl 规范化 | 📋 规划中 |
-| v0.3 | 自动化 | TRAE UI 自动化 adapter（可选） | 📋 规划中 |
+| v0.2 | 增强 | validation + clipboard + events.jsonl 规范化 | ✅ 完成 |
+| v0.3 | 自动化 | TRAE UI 自动化 adapter（可选） | ✅ 完成（未发布） |
 | v0.4 | 可视化 | Web Timeline Viewer（静态导出） | 💡 设想中 |
 | v0.5 | 扩展 | 多 workspace 索引、搜索、diff | 💡 设想中 |
 
 ---
 
-## v0.1：MVP（当前版本）
+## v0.1：MVP
 
 ### 目标
 
@@ -198,11 +198,11 @@
 
 | 任务 | 描述 | 优先级 |
 |------|------|--------|
-| T-011 | 产物校验（检查 output.md 结构） | P0 |
-| T-012 | 剪贴板集成（自动复制 prompt） | P0 |
-| T-013 | events.jsonl 写入（step.started/step.done） | P0 |
-| T-014 | 配置文件支持 | P1 |
-| T-015 | `agent-handoff advance` 命令 | P1 |
+| T-011 | 产物校验（检查 output.md 结构） | P0 ✅ |
+| T-012 | 剪贴板集成（自动复制 prompt） | P0 ✅ |
+| T-013 | events.jsonl 写入（step.started/step.done） | P0 ✅ |
+| T-014 | 配置文件支持 | P1 ✅ |
+| T-015 | `agent-handoff advance` 命令 | P1 ✅ |
 
 ---
 
@@ -228,10 +228,13 @@
 
 | 任务 | 描述 | 优先级 |
 |------|------|--------|
-| T-016 | TRAE 视觉元素识别 | P0 |
-| T-017 | 自动输入 prompt | P0 |
-| T-018 | 操作日志记录 | P1 |
-| T-019 | 错误恢复与降级 | P1 |
+| T-016 | TRAE 视觉元素识别 | P0 ✅ |
+| T-017 | 自动输入 prompt | P0 ✅ |
+| T-018 | 操作日志记录 | P1 ✅ |
+| T-019 | 错误恢复与降级 | P1 ✅ |
+
+补充：
+- `agent-handoff report`：读取 workspace 下 `operations/*.jsonl` 并生成 json/markdown/html 报告（v0.3 期间新增）
 
 ---
 

@@ -225,12 +225,13 @@ state.json（v0 简化）：
 - stage/step：`step.started`、`step.done`
 - artifacts：`artifact.updated`
 - handoff：`handoff.sent`
+- automation：`automation.session`
 - issues：`issue.raised`
 - verify：`verify.passed`、`verify.failed`
 - accept：`accept.passed`、`accept.failed`
 - workflow：`workflow.updated`
 
-每条事件包含：时间、step、类型、关联产物、摘要、元信息。
+每条事件包含：时间、step、类型、关联产物、摘要、元信息（可扩展 data 字段）。
 
 Web Viewer（v0.4 规划）：
 - Timeline：按时间线展示 events

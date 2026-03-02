@@ -6,6 +6,11 @@
 
 实现基于视觉的 TRAE 自动化执行（可选功能），支持自动输入 prompt、操作录制、错误恢复与降级。
 
+## 进展
+
+- ✅ V03-01～V03-05 已完成（实现 + 单测通过）
+- ✅ 新增 `agent-handoff report` 用于生成自动化操作报告
+
 ## 任务依赖关系
 
 ```
@@ -22,13 +27,13 @@ V03-01 TRAE Adapter 基础架构
 
 ## 任务列表
 
-| 序号 | 任务 | 产物 | 优先级 |
-|------|------|------|--------|
-| [V03-01](./V03-01-trae-adapter.md) | TRAE Adapter 基础架构 | src/adapters/trae/ | P0 |
-| [V03-02](./V03-02-trae-visual-elements.md) | TRAE 界面元素识别 | src/adapters/trae/visual-elements.ts | P0 |
-| [V03-03](./V03-03-trae-auto-input.md) | 自动输入 prompt | src/adapters/trae/auto-input.ts | P0 |
-| [V03-04](./V03-04-operation-logger.md) | 操作日志记录 | src/adapters/trae/operation-logger.ts | P1 |
-| [V03-05](./V03-05-error-recovery.md) | 错误恢复与降级 | src/adapters/trae/error-recovery.ts | P1 |
+| 序号 | 任务 | 产物 | 优先级 | 状态 |
+|------|------|------|--------|------|
+| [V03-01](./V03-01-trae-adapter.md) | TRAE Adapter 基础架构 | src/adapters/trae/ | P0 | ✅ |
+| [V03-02](./V03-02-trae-visual-elements.md) | TRAE 界面元素识别 | src/adapters/trae/visual-elements.ts | P0 | ✅ |
+| [V03-03](./V03-03-trae-auto-input.md) | 自动输入 prompt | src/adapters/trae/auto-input.ts | P0 | ✅ |
+| [V03-04](./V03-04-operation-logger.md) | 操作日志记录 | src/adapters/trae/operation-logger.ts | P1 | ✅ |
+| [V03-05](./V03-05-error-recovery.md) | 错误恢复与降级 | src/adapters/trae/error-recovery.ts | P1 | ✅ |
 
 ## 执行顺序
 
