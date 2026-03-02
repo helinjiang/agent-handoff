@@ -12,11 +12,11 @@ export const advanceCommand = new Command('advance')
   .option('-e, --event <type>', '事件类型', 'step.done')
   .option('-s, --summary <text>', '事件摘要')
   .option('--no-state', '不更新 state.json')
-  .option('--no-event', '不写入事件日志')
+  .option('--skip-event', '不写入事件日志')
   .action(
     async (
       workspace: string,
-      options: { event: string; summary?: string; state: boolean; noEvent: boolean }
+      options: { event: string; summary?: string; state: boolean; skipEvent: boolean }
     ) => {
       const workspacePath = path.resolve(workspace);
 
@@ -66,7 +66,7 @@ export const advanceCommand = new Command('advance')
         const eventType = options.event as EventType;
         const eventSummary = options.summary || getDefaultSummary(eventType, step.id);
 
-        if (!options.noEvent) {
+        if (!options.skipEvent) {
           const result = await writeEvent({
             workspacePath,
             step: { index: index + 1, id: step.id },
