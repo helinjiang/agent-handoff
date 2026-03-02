@@ -1,5 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 
@@ -68,7 +69,8 @@ describe('CLI help and version', () => {
   });
 
   it('should show version', () => {
+    const pkg = JSON.parse(fsSync.readFileSync(path.resolve('package.json'), 'utf-8'));
     const output = execSync(`node dist/index.js --version`, { cwd: process.cwd(), encoding: 'utf-8' });
-    expect(output.trim()).toBe('0.1.0');
+    expect(output.trim()).toBe(pkg.version);
   });
 });

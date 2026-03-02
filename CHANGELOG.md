@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-03-02
+
+### Changed
+- 更新 repository URL 为正确的 GitHub 地址
+- 更新 author 信息
+- 统一文档中的文件路径为相对路径
+
 ## [0.1.0] - 2026-03-01
 
 ### Added

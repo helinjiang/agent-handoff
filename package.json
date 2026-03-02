@@ -1,13 +1,13 @@
 {
   "name": "agent-handoff",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "轻量级多 Agent 协作接力工具",
   "type": "module",
-  "author": "",
+  "author": "helinjiang",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/agent-handoff.git"
+    "url": "https://github.com/helinjiang/agent-handoff.git"
   },
   "keywords": [
     "agent",
