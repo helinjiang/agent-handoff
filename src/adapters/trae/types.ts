@@ -6,7 +6,7 @@ export interface VisualElement {
 }
 
 export interface TraeOperation {
-  type: 'click' | 'type' | 'hotkey' | 'wait' | 'screenshot' | 'activate';
+  type: 'click' | 'fill' | 'type' | 'hotkey' | 'wait' | 'screenshot' | 'activate';
   target?: string;
   value?: string;
   modifiers?: string[];
@@ -20,5 +20,7 @@ export interface TraeSession {
   stepId: string;
   operations: TraeOperation[];
   screenshots: string[];
+  completedAt?: string;
+  status?: 'success' | 'failed' | 'partial';
+  error?: string;
 }
-

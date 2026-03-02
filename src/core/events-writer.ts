@@ -9,6 +9,7 @@ export interface WriteEventOptions {
   summary: string;
   workItemId?: string;
   links?: string[];
+  data?: Record<string, unknown>;
 }
 
 export interface EventsWriterResult {
@@ -18,7 +19,7 @@ export interface EventsWriterResult {
 }
 
 export async function writeEvent(options: WriteEventOptions): Promise<EventsWriterResult> {
-  const { workspacePath, step, type, summary, workItemId, links } = options;
+  const { workspacePath, step, type, summary, workItemId, links, data } = options;
 
   const event: Event = {
     ts: new Date().toISOString(),
@@ -27,6 +28,7 @@ export async function writeEvent(options: WriteEventOptions): Promise<EventsWrit
     summary,
     ...(workItemId && { workItemId }),
     ...(links && links.length > 0 && { links }),
+    ...(data && { data }),
   };
 
   try {

@@ -8,7 +8,8 @@ export type EventType =
   | 'accept.passed'
   | 'accept.failed'
   | 'issue.raised'
-  | 'handoff.sent';
+  | 'handoff.sent'
+  | 'automation.session';
 
 export interface EventStep {
   index: number;
@@ -22,13 +23,14 @@ export interface Event {
   type: EventType;
   summary: string;
   links?: string[];
+  data?: Record<string, unknown>;
 }
 
 export function createEvent(
   step: EventStep,
   type: EventType,
   summary: string,
-  options?: { workItemId?: string; links?: string[] }
+  options?: { workItemId?: string; links?: string[]; data?: Record<string, unknown> }
 ): Event {
   return {
     ts: new Date().toISOString(),

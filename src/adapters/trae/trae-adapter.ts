@@ -29,8 +29,6 @@ export class TraeAdapter extends BaseAdapter {
   private _importNutJs: NutJsImporter;
   private _screenFinder: ScreenFinder | null = null;
   private _appManager: AppManager | null = null;
-  private _operationLogger: OperationLogger | null = null;
-  private _autoInput: AutoInput | null = null;
   private _taskWaiter: TaskWaiter | null = null;
 
   constructor(config: Partial<TraeConfig> = {}, nutJsImporter: NutJsImporter = defaultNutJsImporter) {
@@ -104,20 +102,18 @@ export class TraeAdapter extends BaseAdapter {
       };
     }
 
-    if (!this._operationLogger) {
-      this._operationLogger = new OperationLogger();
-    }
-
-    if (!this._autoInput) {
-      this._autoInput = new AutoInput(this._nutjs, this._screenFinder, this._operationLogger);
-    }
+    const operationLogger = new OperationLogger({
+      workspacePath: options?.workspacePath ?? '',
+      stepId: options?.stepId ?? '',
+    });
 
     const screenshotEnabled = options?.screenshot ?? this._traeConfig.screenshot;
     const screenshotDir = options?.workspacePath
       ? path.join(options.workspacePath, this._traeConfig.screenshotDir)
       : undefined;
 
-    const result = await this._autoInput.execute({
+    const autoInput = new AutoInput(this._nutjs, this._screenFinder, operationLogger);
+    const result = await autoInput.execute({
       prompt,
       timeout: options?.timeout ?? this._traeConfig.timeout,
       screenshot: screenshotEnabled,
@@ -129,6 +125,16 @@ export class TraeAdapter extends BaseAdapter {
         this._taskWaiter = new TaskWaiter(this._screenFinder);
       }
       await this._taskWaiter.waitForCompletion(options?.waitTimeoutMs);
+    }
+
+    operationLogger.markCompleted(result.success ? 'success' : 'failed', result.error);
+    if (options?.workspacePath) {
+      try {
+        await operationLogger.saveToFile();
+        await operationLogger.appendToEventsJsonl();
+      } catch {
+        operationLogger.clear();
+      }
     }
 
     return {
@@ -143,8 +149,6 @@ export class TraeAdapter extends BaseAdapter {
     this._nutjs = null;
     this._screenFinder = null;
     this._appManager = null;
-    this._operationLogger = null;
-    this._autoInput = null;
     this._taskWaiter = null;
     this._initialized = false;
   }

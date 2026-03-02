@@ -45,10 +45,10 @@ export class AutoInput {
           throw new Error('Failed to open new task via shortcut or visual click');
         }
         operations.push(clickResult.operation);
-        this.logger.logOperation(clickResult.operation);
+        await this.logger.log(clickResult.operation.type, clickResult.operation.target ?? '');
       } else {
         operations.push(openResult.operation);
-        this.logger.logOperation(openResult.operation);
+        await this.logger.log(openResult.operation.type, openResult.operation.target ?? '', openResult.operation.value);
       }
 
       const inputResult = await this.inputPrompt(options.prompt);
@@ -56,21 +56,31 @@ export class AutoInput {
         throw new Error(`Input failed: ${inputResult.error}`);
       }
       operations.push(inputResult.operation);
-      this.logger.logOperation(inputResult.operation);
+      await this.logger.log(
+        inputResult.operation.type,
+        inputResult.operation.target ?? '',
+        inputResult.operation.value
+      );
 
       const submitResult = await this.submitTask();
       if (!submitResult.success) {
         throw new Error(`Submit failed: ${submitResult.error}`);
       }
       operations.push(submitResult.operation);
-      this.logger.logOperation(submitResult.operation);
+      await this.logger.log(
+        submitResult.operation.type,
+        submitResult.operation.target ?? '',
+        submitResult.operation.value
+      );
 
       if (options.screenshot) {
         const p = await this.takeScreenshot(options.screenshotDir);
         if (p) {
           screenshots.push(p);
-          this.logger.logOperation({ type: 'screenshot', value: p, timestamp: Date.now() });
-          this.logger.logScreenshot(p);
+          const op: TraeOperation = { type: 'screenshot', target: 'screen', value: p, timestamp: Date.now() };
+          operations.push(op);
+          await this.logger.log(op.type, op.target ?? '', op.value);
+          await this.logger.logScreenshot(p);
         }
       }
 
@@ -96,10 +106,15 @@ export class AutoInput {
       await new Promise(r => setTimeout(r, 500));
       return {
         success: true,
-        operation: { type: 'hotkey', value: isMac ? 'Cmd+L' : 'Ctrl+L', timestamp: Date.now() },
+        operation: {
+          type: 'hotkey',
+          target: 'openNewTask',
+          value: isMac ? 'Cmd+L' : 'Ctrl+L',
+          timestamp: Date.now(),
+        },
       };
     } catch {
-      return { success: false, operation: { type: 'hotkey', timestamp: Date.now() } };
+      return { success: false, operation: { type: 'hotkey', target: 'openNewTask', timestamp: Date.now() } };
     }
   }
 
@@ -142,15 +157,12 @@ export class AutoInput {
 
       await keyboard.type(prompt);
 
-      return {
-        success: true,
-        operation: { type: 'type', value: prompt, timestamp: Date.now() },
-      };
+      return { success: true, operation: { type: 'fill', target: 'chatInputArea', value: prompt, timestamp: Date.now() } };
     } catch (error) {
       return {
         success: false,
         error: (error as Error).message,
-        operation: { type: 'type', timestamp: Date.now() },
+        operation: { type: 'fill', target: 'chatInputArea', timestamp: Date.now() },
       };
     }
   }
@@ -171,13 +183,13 @@ export class AutoInput {
 
       return {
         success: true,
-        operation: { type: 'hotkey', value: isMac ? 'Cmd+Enter' : 'Ctrl+Enter', timestamp: Date.now() },
+        operation: { type: 'hotkey', target: 'submit', value: isMac ? 'Cmd+Enter' : 'Ctrl+Enter', timestamp: Date.now() },
       };
     } catch (error) {
       return {
         success: false,
         error: (error as Error).message,
-        operation: { type: 'hotkey', timestamp: Date.now() },
+        operation: { type: 'hotkey', target: 'submit', timestamp: Date.now() },
       };
     }
   }
@@ -199,4 +211,3 @@ export class AutoInput {
     }
   }
 }
-
