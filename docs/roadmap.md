@@ -1,6 +1,6 @@
-# AgentRelay 路线图
+# AgentHandoff 路线图
 
-本文档定义 AgentRelay 的版本规划与里程碑。
+本文档定义 AgentHandoff 的版本规划与里程碑。
 
 ---
 
@@ -8,7 +8,7 @@
 
 | 版本 | 主题 | 核心能力 | 状态 |
 |------|------|----------|------|
-| v0.1 | MVP | CLI 基础 + workspace 管理 + TRAE 辅助模式 | 🚧 进行中 |
+| v0.1 | MVP | CLI 基础 + workspace 管理 + TRAE 辅助模式 | ✅ 完成 |
 | v0.2 | 增强 | validation + clipboard + events.jsonl 规范化 | 📋 规划中 |
 | v0.3 | 自动化 | TRAE UI 自动化 adapter（可选） | 📋 规划中 |
 | v0.4 | 可视化 | Web Timeline Viewer（静态导出） | 💡 设想中 |
@@ -63,8 +63,8 @@
 - `src/cli/commands/` - 命令目录
 
 **验收**：
-- `agent-relay --version` 显示版本
-- `agent-relay --help` 显示帮助
+- `agent-handoff --version` 显示版本
+- `agent-handoff --help` 显示帮助
 - 支持 subcommand 模式（init/status/next）
 
 ---
@@ -116,7 +116,7 @@
 - `src/cli/commands/init.ts` - init 命令实现
 
 **验收**：
-- `agent-relay init demo-xxx` 创建标准 workspace 结构：
+- `agent-handoff init demo-xxx` 创建标准 workspace 结构：
   - workflow.yaml（模板）
   - state.json（初始状态）
   - brief.md（模板）
@@ -176,7 +176,7 @@
 
 **验收**：
 - `npm publish --dry-run` 成功
-- 全局安装后 `agent-relay` 命令可用
+- 全局安装后 `agent-handoff` 命令可用
 - 文档包含快速开始指南
 
 ---
@@ -192,7 +192,7 @@
 1. **产物校验** - 校验 output.md 包含必要区块
 2. **剪贴板集成** - 自动复制 prompt 到剪贴板
 3. **事件日志** - 自动追加 events.jsonl
-4. **配置文件** - 支持 `.agentrelayrc`
+4. **配置文件** - 支持 `.agenthandoffrc`
 
 ### 任务清单
 
@@ -202,7 +202,7 @@
 | T-012 | 剪贴板集成（自动复制 prompt） | P0 |
 | T-013 | events.jsonl 写入（step.started/step.done） | P0 |
 | T-014 | 配置文件支持 | P1 |
-| T-015 | `agent-relay advance` 命令 | P1 |
+| T-015 | `agent-handoff advance` 命令 | P1 |
 
 ---
 
@@ -245,7 +245,7 @@
 
 1. **Timeline 展示** - 按 events.jsonl 渲染时间线
 2. **产物查看** - 点击事件查看关联产物
-3. **静态导出** - `agent-relay export --format=web`
+3. **静态导出** - `agent-handoff export --format=web`
 4. **过滤筛选** - 按 step/workItemId/type 过滤
 
 ### 任务清单

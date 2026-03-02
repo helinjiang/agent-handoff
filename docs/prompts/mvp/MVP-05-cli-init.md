@@ -2,12 +2,12 @@
 
 ## 任务目标
 
-实现 CLI 框架和 `agent-relay init` 命令，创建标准 workspace 结构。
+实现 CLI 框架和 `agent-handoff init` 命令，创建标准 workspace 结构。
 
 ## 上下文
 
 参考示例：
-- `/Users/bytedance/workspace/gitforgithub/agent-relay/examples/workspaces/demo-login/`
+- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/`
 
 ## 产物清单
 
@@ -36,7 +36,7 @@ import { initCommand } from './commands/init';
 const program = new Command();
 
 program
-  .name('agent-relay')
+  .name('agent-handoff')
   .description('轻量级多 Agent 协作接力工具')
   .version('0.1.0');
 
@@ -117,21 +117,21 @@ steps:
 
 ```bash
 # 在当前目录创建 my-project workspace
-agent-relay init my-project
+agent-handoff init my-project
 
 # 在指定目录创建
-agent-relay init my-project --path /path/to/parent
+agent-handoff init my-project --path /path/to/parent
 
 # 目录已存在时报错
-agent-relay init my-project
+agent-handoff init my-project
 # Error: workspace "my-project" already exists
 ```
 
 ## 验收标准
 
-1. `agent-relay --help` 显示帮助信息
-2. `agent-relay --version` 显示版本号
-3. `agent-relay init demo-test` 创建标准 workspace 结构
+1. `agent-handoff --help` 显示帮助信息
+2. `agent-handoff --version` 显示版本号
+3. `agent-handoff init demo-test` 创建标准 workspace 结构
 4. 目录已存在时显示错误信息
 5. `--path` 参数正常工作
 

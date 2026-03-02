@@ -1,11 +1,11 @@
-# AgentRelay
+# AgentHandoff
 
 轻量级多 Agent 协作接力工具。
 
 ## 安装
 
 ```bash
-npm install -g agent-relay
+npm install -g agent-handoff
 ```
 
 ## 快速开始
@@ -13,7 +13,7 @@ npm install -g agent-relay
 ### 1. 创建 workspace
 
 ```bash
-agent-relay init my-project
+agent-handoff init my-project
 ```
 
 ### 2. 编辑 brief.md
@@ -23,13 +23,13 @@ agent-relay init my-project
 ### 3. 查看状态
 
 ```bash
-agent-relay status my-project
+agent-handoff status my-project
 ```
 
 ### 4. 获取下一步 prompt
 
 ```bash
-agent-relay next my-project
+agent-handoff next my-project
 ```
 
 将输出的 Prompt 复制到 TRAE 新 Task 中执行。
@@ -41,7 +41,7 @@ agent-relay next my-project
 创建新的 workspace。
 
 ```bash
-agent-relay init <name> [--path <path>]
+agent-handoff init <name> [--path <path>]
 ```
 
 参数：
@@ -53,7 +53,7 @@ agent-relay init <name> [--path <path>]
 显示 workspace 状态。
 
 ```bash
-agent-relay status [workspace] [--json]
+agent-handoff status [workspace] [--json]
 ```
 
 参数：
@@ -65,7 +65,7 @@ agent-relay status [workspace] [--json]
 输出下一步执行指令和 prompt。
 
 ```bash
-agent-relay next [workspace]
+agent-handoff next [workspace]
 ```
 
 参数：

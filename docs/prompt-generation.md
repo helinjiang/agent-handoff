@@ -1,6 +1,6 @@
 # Prompt 生成规则（CLI 设计说明）
 
-本文件说明：`agent-relay next` 如何根据 workflow.yaml 自动生成 Step Prompt。
+本文件说明：`agent-handoff next` 如何根据 workflow.yaml 自动生成 Step Prompt。
 
 ---
 
@@ -30,13 +30,13 @@ CLI 在执行 `next <workspace>` 时：
 - {{executor}} → executor 类型（trae/shell/...）
 - {{inputPaths}} → 列出输入产物路径 + 简要说明
 - {{outputPath}} → workflow.yaml 中定义的 output
-- {{acceptance}} → workflow.yaml 中定义的验收说明（若无则填“按上一 Step 交接执行”）
+- {{acceptance}} → workflow.yaml 中定义的验收说明（若无则填"按上一 Step 交接执行"）
 
 ---
 
 ## 3. next 输出结构建议
 
-执行 `agent-relay next demo-001` 时输出：
+执行 `agent-handoff next demo-001` 时输出：
 
 1️⃣ 当前 Step 信息
 - Index / ID

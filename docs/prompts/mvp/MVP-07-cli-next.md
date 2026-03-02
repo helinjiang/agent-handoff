@@ -2,12 +2,12 @@
 
 ## 任务目标
 
-实现 TRAE prompt 生成器和 `agent-relay next` 命令。
+实现 TRAE prompt 生成器和 `agent-handoff next` 命令。
 
 ## 上下文
 
 参考示例：
-- `/Users/bytedance/workspace/gitforgithub/agent-relay/examples/workspaces/demo-login/steps/`
+- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/steps/`
 
 ## 产物清单
 
@@ -68,7 +68,7 @@ export function generatePrompt(context: PromptContext): string;
 - 下一步交接
 
 ---
-AgentRelay Step Prompt
+AgentHandoff Step Prompt
 ```
 
 ### next 命令 (src/cli/commands/next.ts)
@@ -130,7 +130,7 @@ Prompt:
 - 下一步交接
 
 ---
-AgentRelay Step Prompt
+AgentHandoff Step Prompt
 ────────────────────────────────────────
 
 提示：将上述 Prompt 复制到 TRAE 新 Task 中执行
@@ -147,10 +147,10 @@ Workflow "demo-login" 已完成所有步骤。
 
 ```bash
 # 显示当前 workspace 下一步
-agent-relay next
+agent-handoff next
 
 # 显示指定 workspace 下一步
-agent-relay next examples/workspaces/demo-login
+agent-handoff next examples/workspaces/demo-login
 ```
 
 ## 验收标准

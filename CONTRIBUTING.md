@@ -1,6 +1,6 @@
 # 贡献指南
 
-欢迎参与 AgentRelay 的开发。
+欢迎参与 Agent-handoff 的开发。
 
 ## 核心原则
 

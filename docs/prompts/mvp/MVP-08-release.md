@@ -28,7 +28,7 @@
 
 ```json
 {
-  "name": "agent-relay",
+  "name": "agent-handoff",
   "version": "0.1.0",
   "description": "轻量级多 Agent 协作接力工具",
   "author": "",
@@ -45,7 +45,7 @@
     "collaboration"
   ],
   "bin": {
-    "agent-relay": "./dist/index.js"
+    "agent-handoff": "./dist/index.js"
   },
   "files": [
     "dist",
@@ -69,9 +69,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - CLI 框架（commander）
-- `agent-relay init` 命令 - 创建 workspace
-- `agent-relay status` 命令 - 显示 workspace 状态
-- `agent-relay next` 命令 - 输出下一步 prompt
+- `agent-handoff init` 命令 - 创建 workspace
+- `agent-handoff status` 命令 - 显示 workspace 状态
+- `agent-handoff next` 命令 - 输出下一步 prompt
 - Core 模型定义（Workflow/Step/State/Event）
 - Workspace 读取与 workflow.yaml 解析
 - 状态机（根据产物推导当前步骤）
@@ -81,29 +81,29 @@ All notable changes to this project will be documented in this file.
 ### README.md 结构
 
 ```markdown
-# AgentRelay
+# AgentHandoff
 
 轻量级多 Agent 协作接力工具。
 
 ## 安装
 
-npm install -g agent-relay
+npm install -g agent-handoff
 
 ## 快速开始
 
 ### 1. 创建 workspace
 
-agent-relay init my-project
+agent-handoff init my-project
 
 ### 2. 编辑 brief.md
 
 ### 3. 查看状态
 
-agent-relay status my-project
+agent-handoff status my-project
 
 ### 4. 获取下一步 prompt
 
-agent-relay next my-project
+agent-handoff next my-project
 
 ## 命令
 
@@ -111,19 +111,19 @@ agent-relay next my-project
 
 创建新的 workspace。
 
-agent-relay init <name> [--path <path>]
+agent-handoff init <name> [--path <path>]
 
 ### status
 
 显示 workspace 状态。
 
-agent-relay status [workspace] [--json]
+agent-handoff status [workspace] [--json]
 
 ### next
 
 输出下一步执行指令和 prompt。
 
-agent-relay next [workspace]
+agent-handoff next [workspace]
 
 ## Workspace 结构
 
@@ -145,7 +145,7 @@ MIT
 
 1. `npm publish --dry-run` 成功
 2. `npm link` 后全局命令可用
-3. `agent-relay --help` 显示完整帮助
+3. `agent-handoff --help` 显示完整帮助
 4. README 包含快速开始指南
 5. CHANGELOG 记录 v0.1.0 变更
 
@@ -159,16 +159,16 @@ pnpm build
 npm link
 
 # 3. 测试全局命令
-agent-relay --version
-agent-relay --help
+agent-handoff --version
+agent-handoff --help
 
 # 4. 测试完整流程
-agent-relay init test-project
-agent-relay status test-project
-agent-relay next test-project
+agent-handoff init test-project
+agent-handoff status test-project
+agent-handoff next test-project
 
 # 5. 清理
-npm unlink -g agent-relay
+npm unlink -g agent-handoff
 rm -rf test-project
 
 # 6. 发布测试

@@ -7,7 +7,7 @@
 ## 上下文
 
 参考示例：
-- `/Users/bytedance/workspace/gitforgithub/agent-relay/examples/workspaces/demo-login/`
+- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/`
 
 ## 产物清单
 

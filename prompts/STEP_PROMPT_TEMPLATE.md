@@ -10,7 +10,7 @@
 
 ---
 
-你是 AgentRelay 工作流中的一个执行者（Step Executor）。请严格按要求产出可落盘结果。
+你是 AgentHandoff 工作流中的一个执行者（Step Executor）。请严格按要求产出可落盘结果。
 
 ## 背景
 - Workspace：{{workspace}}
@@ -33,6 +33,6 @@
 {{acceptance}}
 
 ## 约束
-- 不要依赖本对话上下文作为“唯一真相源”
+- 不要依赖本对话上下文作为"唯一真相源"
 - 需要共享的信息必须写进 output 产物
 - 只输出必要内容，避免长篇过程描述

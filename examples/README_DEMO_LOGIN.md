@@ -1,6 +1,6 @@
 # demo-login：完整“登录功能”示例工作流（从 brief 到 summary）
 
-本压缩包提供一个可直接放入 AgentRelay 仓库的示例 workspace：
+本压缩包提供一个可直接放入 AgentHandoff 仓库的示例 workspace：
 
 - 路径：examples/workspaces/demo-login/
 - 目标：演示 “A（澄清）→ B（规划）→ C（实现）→ D（测试）→ B（验收/总结）” 的多轮接力形态

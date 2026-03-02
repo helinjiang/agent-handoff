@@ -2,15 +2,15 @@
 
 ## 任务目标
 
-定义 AgentRelay 核心数据模型，包括 Workflow、Step、State、Event 等类型。
+定义 AgentHandoff 核心数据模型，包括 Workflow、Step、State、Event 等类型。
 
 ## 上下文
 
 参考文档：
-- `/Users/bytedance/workspace/gitforgithub/agent-relay/docs/protocol.md`
-- `/Users/bytedance/workspace/gitforgithub/agent-relay/examples/workspaces/demo-login/workflow.yaml`
-- `/Users/bytedance/workspace/gitforgithub/agent-relay/examples/workspaces/demo-login/state.json`
-- `/Users/bytedance/workspace/gitforgithub/agent-relay/examples/workspaces/demo-login/events.jsonl`
+- `/Users/bytedance/workspace/gitforgithub/agent-handoff/docs/protocol.md`
+- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/workflow.yaml`
+- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/state.json`
+- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/events.jsonl`
 
 ## 产物清单
 

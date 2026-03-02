@@ -63,7 +63,7 @@ describe('init command', () => {
 describe('CLI help and version', () => {
   it('should show help', () => {
     const output = execSync(`node dist/index.js --help`, { cwd: process.cwd(), encoding: 'utf-8' });
-    expect(output).toContain('agent-relay');
+    expect(output).toContain('agent-handoff');
     expect(output).toContain('轻量级多 Agent 协作接力工具');
   });
 

@@ -52,7 +52,7 @@ export function generatePrompt(context: PromptContext): string {
 - 下一步交接
 
 ---
-AgentRelay Step Prompt`;
+AgentHandoff Step Prompt`;
 
   return prompt;
 }

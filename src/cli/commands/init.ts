@@ -61,8 +61,8 @@ steps:
       console.log(`
 Next steps:
   1. Edit brief.md to describe your requirements
-  2. Run "agent-relay status ${name}" to check workspace status
-  3. Run "agent-relay next ${name}" to get the first step prompt
+  2. Run "agent-handoff status ${name}" to check workspace status
+  3. Run "agent-handoff next ${name}" to get the first step prompt
 `);
     } catch (error) {
       console.error(`Error creating workspace: ${error}`);

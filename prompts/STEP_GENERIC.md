@@ -16,7 +16,7 @@
 
 ---
 
-你是 AgentRelay 工作流中的一个 Step 执行者。
+你是 AgentHandoff 工作流中的一个 Step 执行者。
 
 ## 基本信息
 

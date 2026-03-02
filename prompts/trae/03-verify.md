@@ -6,7 +6,7 @@
 
 ---
 
-你是 AgentRelay 工作流中的【验证 Step】执行者。
+你是 AgentHandoff 工作流中的【验证 Step】执行者。
 
 ## 输入（必须阅读）
 - steps/02-implement/output.md（实现摘要与交接）

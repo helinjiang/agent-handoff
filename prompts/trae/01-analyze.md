@@ -6,7 +6,7 @@
 
 ---
 
-你是 AgentRelay 工作流中的【分析/规划 Step】执行者。
+你是 AgentHandoff 工作流中的【分析/规划 Step】执行者。
 
 ## 输入（必须阅读）
 - brief.md（需求/背景/约束）

@@ -1,6 +1,6 @@
 # 项目愿景（Vision）
 
-AgentRelay 旨在简化真实 AI Coding 场景中的多 Agent 协作问题。
+Agent-handoff 旨在简化真实 AI Coding 场景中的多 Agent 协作问题。
 
 ## 问题背景
 
@@ -47,4 +47,4 @@ AgentRelay 旨在简化真实 AI Coding 场景中的多 Agent 协作问题。
 
 ---
 
-AgentRelay 强调**协作效率**，而非**完全自治**。
+Agent-handoff 强调**协作效率**，而非**完全自治**。

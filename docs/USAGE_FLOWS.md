@@ -1,6 +1,6 @@
-# AgentRelay 典型使用流程（USAGE_FLOWS）
+# AgentHandoff 典型使用流程（USAGE_FLOWS）
 
-本文件描述 AgentRelay 在真实场景中的推荐协作模式：
+本文件描述 AgentHandoff 在真实场景中的推荐协作模式：
 
 - A：秘书（需求澄清）
 - B：技术负责人（规划与验收）
@@ -41,7 +41,7 @@ B 根据 brief 与 decisions：
   - y-accept
   - …
 
-workflow.yaml 是当前执行队列的“快照”，可在执行过程中调整。
+workflow.yaml 是当前执行队列的"快照"，可在执行过程中调整。
 
 ---
 
@@ -72,7 +72,7 @@ B 可以：
 - 追加新的工作项
 - 提前结束流程
 
-但始终保持线性步骤链，不引入 DAG。
+但始终保持线性步骤链。不引入 DAG。
 
 ---
 

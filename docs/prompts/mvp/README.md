@@ -1,4 +1,4 @@
-# AgentRelay v0.1 MVP 任务清单
+# AgentHandoff v0.1 MVP 任务清单
 
 本文档汇总 v0.1 MVP 的所有任务，每个任务对应一个独立的 Prompt 文件。
 
@@ -71,17 +71,17 @@ v0.1 MVP 完成标准：
 npm link
 
 # 2. 测试 demo-login
-agent-relay status examples/workspaces/demo-login
+agent-handoff status examples/workspaces/demo-login
 # 输出: Status: done
 
 # 3. 创建新 workspace
-agent-relay init test-project
-agent-relay status test-project
-agent-relay next test-project
+agent-handoff init test-project
+agent-handoff status test-project
+agent-handoff next test-project
 
 # 4. 清理
 rm -rf test-project
-npm unlink -g agent-relay
+npm unlink -g agent-handoff
 ```
 
 ## 参考文档

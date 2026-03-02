@@ -2,7 +2,7 @@
 
 ## 任务目标
 
-实现 `agent-relay status` 命令，显示 workspace 当前状态。
+实现 `agent-handoff status` 命令，显示 workspace 当前状态。
 
 ## 上下文
 
@@ -11,7 +11,7 @@
 - MVP-04 的状态机功能
 
 参考示例：
-- `/Users/bytedance/workspace/gitforgithub/agent-relay/examples/workspaces/demo-login/`
+- `/Users/bytedance/workspace/gitforgithub/agent-handoff/examples/workspaces/demo-login/`
 
 ## 产物清单
 
@@ -82,13 +82,13 @@ Current: completed
 
 ```bash
 # 显示当前目录 workspace 状态
-agent-relay status
+agent-handoff status
 
 # 显示指定 workspace 状态
-agent-relay status examples/workspaces/demo-login
+agent-handoff status examples/workspaces/demo-login
 
 # JSON 格式输出
-agent-relay status --json
+agent-handoff status --json
 ```
 
 ## 错误处理

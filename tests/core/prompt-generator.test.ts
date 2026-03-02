@@ -28,7 +28,7 @@ describe('prompt-generator', () => {
     expect(prompt).toContain('steps/01-test-step/output.md');
     expect(prompt).toContain('验收点1');
     expect(prompt).toContain('验收点2');
-    expect(prompt).toContain('AgentRelay Step Prompt');
+    expect(prompt).toContain('AgentHandoff Step Prompt');
   });
 
   it('should include workItemId when present', () => {

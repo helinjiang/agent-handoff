@@ -2,11 +2,11 @@
 
 ## 任务目标
 
-初始化 AgentRelay TypeScript 项目，配置构建、测试、lint 工具链。
+初始化 AgentHandoff TypeScript 项目，配置构建、测试、lint 工具链。
 
 ## 上下文
 
-- 项目名称：agent-relay
+- 项目名称：agent-handoff
 - 包管理器：pnpm
 - 语言：TypeScript
 - 测试框架：Vitest
@@ -16,7 +16,7 @@
 ## 产物清单
 
 ```
-agent-relay/
+agent-handoff/
 ├── package.json           # 项目配置
 ├── tsconfig.json          # TypeScript 配置
 ├── vitest.config.ts       # 测试配置
@@ -32,12 +32,12 @@ agent-relay/
 
 ```json
 {
-  "name": "agent-relay",
+  "name": "agent-handoff",
   "version": "0.1.0",
   "description": "轻量级多 Agent 协作接力工具",
   "type": "module",
   "bin": {
-    "agent-relay": "./dist/index.js"
+    "agent-handoff": "./dist/index.js"
   },
   "scripts": {
     "build": "tsup",
@@ -114,7 +114,7 @@ export default defineConfig({
 ```typescript
 #!/usr/bin/env node
 
-console.log('agent-relay v0.1.0');
+console.log('agent-handoff v0.1.0');
 ```
 
 ## 验收标准
@@ -122,7 +122,7 @@ console.log('agent-relay v0.1.0');
 1. `pnpm install` 成功
 2. `pnpm build` 成功，生成 `dist/index.js`
 3. `pnpm test` 成功运行
-4. `node dist/index.js` 输出 `agent-relay v0.1.0`
+4. `node dist/index.js` 输出 `agent-handoff v0.1.0`
 5. `pnpm typecheck` 无错误
 
 ## 执行指令

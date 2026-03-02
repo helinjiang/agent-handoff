@@ -6,7 +6,7 @@
 
 ---
 
-你是 AgentRelay 工作流中的【实现 Step】执行者。
+你是 AgentHandoff 工作流中的【实现 Step】执行者。
 
 ## 输入（必须阅读）
 - steps/01-analyze/output.md（上一 Step 的规划与交接）
