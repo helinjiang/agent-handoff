@@ -9,6 +9,7 @@ import { advanceCommand } from './cli/commands/advance.js';
 import { configCommand } from './cli/commands/config.js';
 import { reportCommand } from './cli/commands/report.js';
 import { exportCommand } from './cli/commands/export.js';
+import { indexCommand } from './cli/commands/index.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json');
@@ -28,5 +29,6 @@ program.addCommand(advanceCommand);
 program.addCommand(configCommand);
 program.addCommand(reportCommand);
 program.addCommand(exportCommand);
+program.addCommand(indexCommand);
 
 program.parse();

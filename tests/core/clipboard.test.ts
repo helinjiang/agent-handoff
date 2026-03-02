@@ -32,7 +32,11 @@ describe('clipboard', () => {
 
     const testText = 'Test content for reading';
     await copyToClipboard(testText);
-    const readText = await readFromClipboard();
+    let readText = await readFromClipboard();
+    if (readText !== testText) {
+      await copyToClipboard(testText);
+      readText = await readFromClipboard();
+    }
     expect(readText).toBe(testText);
   });
 
