@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-03-02
+
+### Added
+- TRAE 自动化能力（可选）：视觉识别、自动输入、任务等待（Nut.js 路线）
+- 自动化操作日志：会话级 JSONL 落盘（`workspace/operations/`）
+- 自动化诊断落盘：失败时输出 diagnostics JSON（`workspace/diagnostics/`）
+- 自动化降级：失败时输出可继续手工执行的辅助模式提示，并可复制 prompt 到剪贴板
+- `agent-handoff report` 命令：从 operations JSONL 生成 json/markdown/html 报告
+- 新事件类型：`automation.session`（events.jsonl，支持 data 字段承载统计信息）
+
+### Changed
+- `TraeAdapter.execute()` 支持恢复重试与失败降级输出
+
 ## [0.2.0] - 2026-03-02
 
 ### Added
@@ -21,19 +34,6 @@ All notable changes to this project will be documented in this file.
 
 ### Dependencies
 - 新增 `clipboardy` 依赖（跨平台剪贴板）
-
-## [0.3.0] - 2026-03-02
-
-### Added
-- TRAE 自动化能力（可选）：视觉识别、自动输入、任务等待（Nut.js 路线）
-- 自动化操作日志：会话级 JSONL 落盘（`workspace/operations/`）
-- 自动化诊断落盘：失败时输出 diagnostics JSON（`workspace/diagnostics/`）
-- 自动化降级：失败时输出可继续手工执行的辅助模式提示，并可复制 prompt 到剪贴板
-- `agent-handoff report` 命令：从 operations JSONL 生成 json/markdown/html 报告
-- 新事件类型：`automation.session`（events.jsonl，支持 data 字段承载统计信息）
-
-### Changed
-- `TraeAdapter.execute()` 支持恢复重试与失败降级输出
 
 ## [0.1.1] - 2026-03-02
 
