@@ -14,9 +14,21 @@ describe('TraeAdapter', () => {
   it('should initialize via injected Nut.js importer', async () => {
     const nutjs: any = {
       mouse: {},
-      keyboard: { config: {} },
+      keyboard: {
+        config: {},
+        pressKey: async () => {},
+        releaseKey: async () => {},
+        type: async () => {},
+      },
       screen: { config: {} },
       imageResource: () => ({}),
+      centerOf: async () => ({ x: 0, y: 0 }),
+      Key: {
+        LeftCmd: 'LeftCmd',
+        Space: 'Space',
+        Enter: 'Enter',
+        LeftSuper: 'LeftSuper',
+      },
     };
     const adapter = new TraeAdapter(
       { enabled: true, confidence: 0.55, typingDelay: 42 },
@@ -38,4 +50,3 @@ describe('TraeAdapter', () => {
     expect(result.error).toContain('not initialized');
   });
 });
-

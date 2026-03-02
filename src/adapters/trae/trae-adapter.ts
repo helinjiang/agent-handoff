@@ -1,11 +1,14 @@
 import { AdapterResult, AdapterType, BaseAdapter, ExecuteOptions } from '../base';
 import { DEFAULT_TRAE_CONFIG, TraeConfig } from './config';
+import { AppManager } from './app-manager';
+import { ScreenFinder } from './screen-finder';
 
 type NutJsModule = {
   mouse: unknown;
   keyboard: { config?: { autoDelayMs?: number } };
   screen: { config?: { confidence?: number } };
   imageResource: (path: string) => unknown;
+  centerOf?: (region: unknown) => unknown;
 };
 
 type NutJsImporter = () => Promise<NutJsModule>;
@@ -20,6 +23,8 @@ export class TraeAdapter extends BaseAdapter {
   private _traeConfig: TraeConfig;
   private _nutjs: NutJsModule | null = null;
   private _importNutJs: NutJsImporter;
+  private _screenFinder: ScreenFinder | null = null;
+  private _appManager: AppManager | null = null;
 
   constructor(config: Partial<TraeConfig> = {}, nutJsImporter: NutJsImporter = defaultNutJsImporter) {
     super('trae', {
@@ -44,6 +49,9 @@ export class TraeAdapter extends BaseAdapter {
       if (this._nutjs.keyboard?.config) {
         this._nutjs.keyboard.config.autoDelayMs = this._traeConfig.typingDelay;
       }
+      this._screenFinder = new ScreenFinder(this._nutjs, this._traeConfig);
+      this._appManager = new AppManager(this._nutjs, this._traeConfig.appName);
+      await this._appManager.activateApp();
       this._initialized = true;
     } catch (error) {
       throw new Error(`Failed to load Nut.js: ${(error as Error).message}`);
@@ -52,6 +60,14 @@ export class TraeAdapter extends BaseAdapter {
 
   async isReady(): Promise<boolean> {
     return this._initialized && this._nutjs !== null;
+  }
+
+  getScreenFinder(): ScreenFinder | null {
+    return this._screenFinder;
+  }
+
+  getAppManager(): AppManager | null {
+    return this._appManager;
   }
 
   async execute(prompt: string, options?: ExecuteOptions): Promise<AdapterResult> {
@@ -84,7 +100,8 @@ export class TraeAdapter extends BaseAdapter {
 
   async cleanup(): Promise<void> {
     this._nutjs = null;
+    this._screenFinder = null;
+    this._appManager = null;
     this._initialized = false;
   }
 }
-
