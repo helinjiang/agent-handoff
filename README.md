@@ -113,6 +113,38 @@ agent-handoff report [workspace] [--format markdown|json|html] [--session <id>] 
 agent-handoff export [workspace] --format web [--output <dir>] [--limit <n>]
 ```
 
+### index
+
+生成 workspace 索引，并支持 registry 管理。
+
+```bash
+agent-handoff index [workspace] [--add] [--remove <pathOrName>] [--list] [--output <file>] [--json]
+```
+
+### search
+
+在多个 workspace 索引上执行搜索。
+
+```bash
+agent-handoff search <query> [--workspace <pathOrName...>] [--type <t...>] [--step <id...>] [--work-item <id...>] [--limit <n>] [--json]
+```
+
+### diff
+
+对两个 workspace 做基于索引的差异对比。
+
+```bash
+agent-handoff diff <left> <right> [--format text|markdown|json] [--path <p...>] [--context <n>]
+```
+
+### stats
+
+输出 workspace 统计信息（summary/full）。
+
+```bash
+agent-handoff stats [workspace...] [--registry] [--mode summary|full] [--format json|markdown]
+```
+
 ## Workspace 结构
 
 ```

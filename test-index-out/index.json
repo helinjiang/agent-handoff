@@ -1,0 +1,289 @@
+{
+  "version": 1,
+  "workspacePath": "/Users/bytedance/workspace/gitforgithub/agent-relay/examples/workspaces/demo-login",
+  "workspaceName": "demo-login",
+  "indexedAt": "2026-03-02T15:51:05.632Z",
+  "workflowName": "demo-login",
+  "steps": [
+    {
+      "id": "a-clarify",
+      "index": 1,
+      "outputPath": "steps/01-a-clarify/output.md",
+      "outputExists": true
+    },
+    {
+      "id": "b-plan",
+      "index": 2,
+      "outputPath": "steps/02-b-plan/output.md",
+      "outputExists": true
+    },
+    {
+      "id": "login-implement",
+      "index": 3,
+      "outputPath": "steps/03-login-implement/output.md",
+      "outputExists": true
+    },
+    {
+      "id": "login-test",
+      "index": 4,
+      "outputPath": "steps/04-login-test/output.md",
+      "outputExists": true
+    },
+    {
+      "id": "login-accept",
+      "index": 5,
+      "outputPath": "steps/05-login-accept/output.md",
+      "outputExists": true
+    },
+    {
+      "id": "b-summary",
+      "index": 6,
+      "outputPath": "steps/06-b-summary/output.md",
+      "outputExists": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "brief.md",
+      "kind": "brief",
+      "bytes": 1072,
+      "updatedAt": "2026-03-02T04:09:44.681Z",
+      "preview": "# brief：为现有项目增加登录能力\n\n## 背景\n现有项目尚未支持登录/鉴权。希望新增一套基础登录能力，便于后续扩展权限与用户体系。\n\n## 目标（本轮）\n- 支持用户名/密码登录（email + password 也可）\n- 登录成功后保存会话（Session 或 JWT）\n- 提供登出能力\n- 提供受保护接口示例（需要登录才能访问）\n\n## 技术栈约束\n- Node.js 服务端（示例以 Express + TypeScript 描述）\n- 数据库可用 SQLite/Postgres（示例以 Postgres 思路描述，允许替换）\n\n## 安全与质量要求\n- 密码必须安全存储（哈希+盐）\n- 基础防护：输入校验、错误信息不要泄露敏感细节\n- 提供最小可用测试（单测或集成测试二选一）\n\n## 非目标（本轮不做）\n- OAuth/第三方登录（Google/GitHub 等）\n- 多因素认证（MFA）\n- 复杂 RBAC/ACL（后续再做）\n- 完整前端 UI（可只提供 API）\n\n## 验收标准\n- 能在本地跑起来：注册/登录/登出/受保护接口\n- 文档说明清楚（如何配置与调用）\n"
+    },
+    {
+      "path": "steps/01-a-clarify/output.md",
+      "kind": "step.output",
+      "bytes": 1731,
+      "updatedAt": "2026-03-02T04:09:44.683Z",
+      "preview": "# A-clarify 输出：需求澄清与补充\n\n## 澄清问题（已假设答案，用于示例）\n1. 是否需要注册？——需要（最小注册 API）。\n2. 登录标识用 email 还是 username？——用 email。\n3. 会话策略：Session Cookie 还是 JWT？——选 Session Cookie（HTTP-only）。\n4. 是否需要“记住我/长会话”？——本轮不做，默认短会话即可。\n5. 是否需要刷新 token / CSRF 防护？——本轮仅做最小安全：HTTP-only cookie + CORS/同站策略提示；CSRF 作为后续增强项。\n6. 需要前端页面吗？——不需要，API 即可（可给 curl 示例）。\n\n## 范围与非目标（补充）\n- 范围：注册、登录、登出、受保护接口示例；密码哈希存储；最小测试或验收脚本。\n- 非目标：OAuth/MFA/RBAC/完整前端 UI/复杂会话管理/限流与风控（后续）。\n\n## 产物更新\n- 建议在 brief 中补充：接口清单、错误码策略、环境变量配置方式。\n- 建议在 decisions 中补充：cookie 选项（httpOnly/secure/sameSite）、session 存储（内存/redis）。\n\n## 关键决策\n- 维持 Session Cookie：实现简单、撤销友好；后续可替换 JWT。\n- 错误信息统一：避免暴露“用户不存在/密码错误”。\n\n## 风险与待确认\n- 生产环境 session 存储建议使用 Redis；本示例可用内存 store。\n- CSRF/同站策略需要在有前端页面后再系统性补齐。\n\n## 下一步交接\n- 交给 B：请把本需求拆成 2-4 个可独立验收的工作项，并生成步骤队列（带 workItemId）。\n- 输入：brief.md + decisions.md + 本文件\n- 输出：steps/02-b-plan/output.md（含工作项拆解、验收标准、建议更新 workflow.yaml）\n"
+    },
+    {
+      "path": "steps/02-b-plan/output.md",
+      "kind": "step.output",
+      "bytes": 2095,
+      "updatedAt": "2026-03-02T04:09:44.683Z",
+      "preview": "# B-plan 输出：工作项拆解与步骤队列\n\n## 工作项（Work Items）拆解（本示例采用 1 个工作项）\n为保持示例最小闭环，本轮先只做 1 个工作项：\n\n- workItemId: **login**\n- 交付内容：注册/登录/登出/受保护接口 + 最小测试 + 文档\n- 验收：本地可跑通 + 失败路径覆盖 + 不泄露敏感信息\n\n> 如果要拆成 2-3 个工作项（更贴近真实）：\n> - auth-core（用户模型/密码哈希/注册）\n> - auth-session（session/cookie/登录登出/保护路由）\n> - auth-tests（测试与文档）\n> 但此处为演示简化为 login 一个 work item。\n\n## 步骤队列（建议）\n1. login-implement（C）：实现 API 与会话逻辑\n2. login-test（D）：验证/测试\n3. login-accept（B）：验收与必要修正（不通过则插入 fix）\n4. b-summary（B）：总结\n\n## 验收点（Acceptance）\n### login-implement\n- 注册：POST /auth/register\n- 登录：POST /auth/login（成功 set-cookie）\n- 登出：POST /auth/logout（清 session）\n- 保护接口：GET /me（需要登录）\n- 密码：bcrypt 哈希存储\n- 错误：统一登录失败信息\n\n### login-test\n- 成功路径：注册→登录→访问 /me→登出→/me 失败\n- 失败路径：错误密码登录失败；未登录访问 /me 失败\n\n### login-accept\n- 核对非目标未引入（OAuth/MFA）\n- 核对 docs/README 或 steps 输出里有运行说明与 curl 示例\n\n## 产物更新\n- workflow.yaml：已包含 workItemId: login 的 steps（本示例已写入）\n\n## 关键决策\n- 保持线性链：实现→测试→验收→总结；若失败则插入 fix，而不是引入分支。\n\n## 风险与待确认\n- 真实项目的框架不一定是 Express；本示例以 Express 描述，实际可映射到 NestJS/Koa。\n- 数据库与 ORM 选型可替换；本示例提供接口级契约与最小表结构。\n\n## 下一步交接\n- 交给 C：实现 login-implement。\n- 输入：本文件的验收点 + decisions.md\n- 输出：steps/03-login-implement/output.md（包含：API 设计、关键代码结构、运行说明、curl 示例）\n"
+    },
+    {
+      "path": "steps/03-login-implement/output.md",
+      "kind": "step.output",
+      "bytes": 3383,
+      "updatedAt": "2026-03-02T04:09:44.684Z",
+      "preview": "# login-implement 输出：实现方案与代码骨架（示例）\n\n> 说明：这是“示例工作流产物”，用于展示 AgentHandoff 的接力与交付物形态。\n> 你可以把它当成 C 在 TRAE 中实现后的总结/交接文档。\n> 实际项目中，这一步会伴随真实代码提交。\n\n## 产物更新\n- 新增：用户表/模型（User）\n- 新增：鉴权路由（/auth/register, /auth/login, /auth/logout）\n- 新增：受保护接口（/me）\n- 新增：会话中间件（session + cookie）\n- 更新：README（运行与 curl 示例）\n\n## 关键决策\n- 使用 Session Cookie（HTTP-only）存储登录态：服务端可撤销，浏览器友好。\n- bcrypt 存储 password_hash，不保存明文密码。\n- 登录失败统一提示，避免泄露“用户是否存在”。\n\n## 设计（Express + TypeScript 示例）\n\n### 目录结构（建议）\n- src/\n  - app.ts\n  - db.ts\n  - models/user.ts\n  - routes/auth.ts\n  - routes/me.ts\n  - middleware/authRequired.ts\n\n### 数据模型（最小）\nUser:\n- id: uuid\n- email: string unique\n- password_hash: string\n- created_at / updated_at\n\n### API 契约\n1) POST /auth/register\n- body: { email, password }\n- 201: { id, email }\n- 400: 校验失败/邮箱已存在（信息可适度）\n\n2) POST /auth/login\n- body: { email, password }\n- 200: { ok: true }\n- set-cookie: sessionId=...; HttpOnly; SameSite=Lax\n- 401: { message: \"账号或密码错误\" }\n\n3) POST /auth/logout\n- 200: { ok: true }（清 session cookie）\n\n4) GET /me（受保护）\n- 200: { id, email }\n- 401: 未登录\n\n### 关键实现点（伪代码）\n#### app.ts\n- 使用 express.json()\n- 配置 session middleware（express-session）\n- mount routes: /auth, /me\n\n#### /auth/register\n- validate email/password\n- 查重 email\n- bcrypt.hash(password, saltRounds)\n- insert user\n- return user basic\n\n#### /auth/login\n- 查 user by email\n- bcrypt.compare(password, user.password_hash)\n- 失败统一返回 401 + message\n- 成功：req.session.userId = user.id\n\n#### authRequired middleware\n- if !req.session.userId -> 401\n- else next()\n\n#### /me\n- authRequired\n- 根据 userId 取 user，返回\n\n## 运行说明（示例）\n环境变量：\n- DATABASE_URL（或 sqlite 文件路径）\n- SESSION_SECRET\n\n启动：\n- pnpm i\n- pnpm dev\n- 服务监听 :3000\n\n## curl 验收脚本（示例）\n```bash\n# 注册\ncurl -i -X POST http://localhost:3000/auth/register   -H 'content-type: application/json'   -d '{\"email\":\"a@test.com\",\"password\":\"p@ssw0rd\"}'\n\n# 登录（保存 cookie 到 cookie.txt）\ncurl -i -c cookie.txt -X POST http://localhost:3000/auth/login   -H 'content-type: application/json'   -d '{\"email\":\"a@test.com\",\"password\":\"p@ssw0"
+    },
+    {
+      "path": "steps/04-login-test/output.md",
+      "kind": "step.output",
+      "bytes": 981,
+      "updatedAt": "2026-03-02T04:09:44.685Z",
+      "preview": "# login-test 输出：验证报告（示例）\n\n## 产物更新\n- 新增：手工验收脚本（curl 步骤）\n- 覆盖：成功路径与失败路径清单\n\n## 验证用例与结果\n### 成功路径\n1. 注册成功（201）✅\n2. 登录成功，返回 200 且 set-cookie ✅\n3. 携带 cookie 访问 /me 返回 200 ✅\n4. 登出返回 200 ✅\n5. 登出后访问 /me 返回 401 ✅\n\n### 失败路径\n1. 错误密码登录：401 + “账号或密码错误” ✅\n2. 未登录访问 /me：401 ✅\n3. 重复注册邮箱：返回 400（信息可控）✅\n\n## 关键决策\n- 验收脚本采用 curl + cookie jar：最小依赖、易复现。\n\n## 风险与待确认\n- 若部署在跨域前端：需要确认 CORS 与 cookie 的 sameSite/secure 配置策略。\n- 生产环境 session store 需要落地（Redis）。\n\n## 下一步交接\n- 交给 B（验收）：本轮测试通过，可进入验收 Step。\n- 输出：steps/05-login-accept/output.md（明确 accept.passed 或提出 fix）\n"
+    },
+    {
+      "path": "steps/05-login-accept/output.md",
+      "kind": "step.output",
+      "bytes": 947,
+      "updatedAt": "2026-03-02T08:36:58.120Z",
+      "preview": "# login-accept 输出：验收结论（示例）\n\n## 产物更新\n- 更新：验收结论文档\n- 确认：所有验收点通过\n\n## 验收结论\n✅ **accept.passed**\n\n## 验收依据\n- 满足本轮目标：注册/登录/登出/受保护接口示例\n- 安全底线满足：bcrypt 哈希，错误信息不泄露\n- 有可复现验证方式：curl 脚本覆盖成功/失败路径\n- 非目标未引入：未实现 OAuth/MFA/RBAC/UI\n\n## 关键决策\n- 本轮保持最小闭环，未引入复杂会话策略（记住我/刷新机制）。\n\n## 风险与待确认（后续建议）\n- 上线前必须：HTTPS + secure cookie + session store（Redis）\n- 视前端形态补充 CSRF 与 CORS 策略\n- 未来扩展：RBAC/ACL、审计日志、限流与风控\n\n## 下一步交接\n- 交给 B：输出总结（summary），并提出下一轮可以拆分的 work items（例如 auth-core/auth-session/auth-hardening）。\n- 输出：steps/06-b-summary/output.md\n"
+    },
+    {
+      "path": "steps/06-b-summary/output.md",
+      "kind": "step.output",
+      "bytes": 1629,
+      "updatedAt": "2026-03-02T08:36:58.120Z",
+      "preview": "# summary：登录能力交付总结（示例）\n\n## 产物更新\n- 更新：总结文档\n- 归档：事件日志与产物\n\n## 本轮交付内容\n- 注册：POST /auth/register\n- 登录：POST /auth/login（Session Cookie, HTTP-only）\n- 登出：POST /auth/logout\n- 受保护接口示例：GET /me\n- 密码：bcrypt 哈希存储\n- 验收：提供 curl 脚本覆盖成功/失败路径\n\n## 如何运行（示例）\n1. 配置环境变量：DATABASE_URL（或 sqlite），SESSION_SECRET\n2. 启动服务：pnpm dev\n3. 执行 docs 中的 curl 验收脚本（见 login-implement 输出）\n\n## 关键决策回顾\n- Session Cookie（HTTP-only）作为鉴权：最小闭环，易撤销\n- 登录失败统一提示：不泄露用户存在性\n- 验收以可复现脚本为准：降低沟通成本\n\n## 风险与待确认\n- 生产环境需配置 HTTPS 和 secure cookie\n- session store 需从内存迁移到 Redis\n- 后续需补充 CSRF 和 CORS 策略\n\n## 事件时间线（可用于 Web Viewer）\n- a-clarify → b-plan → login-implement → login-test → login-accept → b-summary\n- 详见 events.jsonl（支持按 workItemId=login 过滤）\n\n## 下一轮建议（可拆分为 Work Items）\n- auth-hardening：HTTPS/secure cookie/CSRF/CORS 策略\n- auth-store：Redis session store + 过期策略\n- access-control：RBAC/ACL 基础能力\n- audit：登录/登出审计日志与告警\n\n## 收尾动作\n- 将 state.json 标记 done（本示例已 done）\n- 归档产物与事件日志，后续可 export web timeline\n\n## 下一步交接\n- 工作流已完成，无下一步\n- 可基于本示例创建新的工作流继续开发其他功能\n"
+    }
+  ],
+  "events": [
+    {
+      "ts": "2026-03-01T09:00:00+08:00",
+      "stepId": "a-clarify",
+      "stepIndex": 1,
+      "type": "step.started",
+      "summary": "开始需求澄清",
+      "links": [
+        "brief.md",
+        "decisions.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T09:20:00+08:00",
+      "stepId": "a-clarify",
+      "stepIndex": 1,
+      "type": "artifact.updated",
+      "summary": "补充澄清问题与范围",
+      "links": [
+        "steps/01-a-clarify/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T09:25:00+08:00",
+      "stepId": "a-clarify",
+      "stepIndex": 1,
+      "type": "step.done",
+      "summary": "需求澄清完成",
+      "links": [
+        "steps/01-a-clarify/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T09:30:00+08:00",
+      "stepId": "b-plan",
+      "stepIndex": 2,
+      "type": "step.started",
+      "summary": "开始规划拆解",
+      "links": [
+        "steps/01-a-clarify/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T10:05:00+08:00",
+      "stepId": "b-plan",
+      "stepIndex": 2,
+      "type": "workflow.updated",
+      "summary": "生成工作项与步骤队列建议（login）",
+      "links": [
+        "steps/02-b-plan/output.md",
+        "workflow.yaml"
+      ]
+    },
+    {
+      "ts": "2026-03-01T10:10:00+08:00",
+      "stepId": "b-plan",
+      "stepIndex": 2,
+      "type": "step.done",
+      "summary": "规划完成",
+      "links": [
+        "steps/02-b-plan/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T10:15:00+08:00",
+      "stepId": "login-implement",
+      "stepIndex": 3,
+      "type": "step.started",
+      "summary": "开始实现登录能力",
+      "workItemId": "login",
+      "links": [
+        "steps/02-b-plan/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T11:50:00+08:00",
+      "stepId": "login-implement",
+      "stepIndex": 3,
+      "type": "artifact.updated",
+      "summary": "完成 API 实现与文档",
+      "workItemId": "login",
+      "links": [
+        "steps/03-login-implement/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T11:55:00+08:00",
+      "stepId": "login-implement",
+      "stepIndex": 3,
+      "type": "step.done",
+      "summary": "实现完成",
+      "workItemId": "login",
+      "links": [
+        "steps/03-login-implement/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T12:05:00+08:00",
+      "stepId": "login-test",
+      "stepIndex": 4,
+      "type": "step.started",
+      "summary": "开始验证/测试",
+      "workItemId": "login",
+      "links": [
+        "steps/03-login-implement/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T12:25:00+08:00",
+      "stepId": "login-test",
+      "stepIndex": 4,
+      "type": "verify.passed",
+      "summary": "测试通过（含失败路径覆盖）",
+      "workItemId": "login",
+      "links": [
+        "steps/04-login-test/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T12:30:00+08:00",
+      "stepId": "login-test",
+      "stepIndex": 4,
+      "type": "step.done",
+      "summary": "验证完成",
+      "workItemId": "login",
+      "links": [
+        "steps/04-login-test/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T12:35:00+08:00",
+      "stepId": "login-accept",
+      "stepIndex": 5,
+      "type": "step.started",
+      "summary": "开始验收",
+      "workItemId": "login",
+      "links": [
+        "steps/04-login-test/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T12:45:00+08:00",
+      "stepId": "login-accept",
+      "stepIndex": 5,
+      "type": "accept.passed",
+      "summary": "验收通过",
+      "workItemId": "login",
+      "links": [
+        "steps/05-login-accept/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T12:50:00+08:00",
+      "stepId": "login-accept",
+      "stepIndex": 5,
+      "type": "step.done",
+      "summary": "验收结束",
+      "workItemId": "login",
+      "links": [
+        "steps/05-login-accept/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T13:00:00+08:00",
+      "stepId": "b-summary",
+      "stepIndex": 6,
+      "type": "step.started",
+      "summary": "开始总结",
+      "links": [
+        "steps/05-login-accept/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T13:20:00+08:00",
+      "stepId": "b-summary",
+      "stepIndex": 6,
+      "type": "artifact.updated",
+      "summary": "输出总结与后续建议",
+      "links": [
+        "steps/06-b-summary/output.md"
+      ]
+    },
+    {
+      "ts": "2026-03-01T13:25:00+08:00",
+      "stepId": "b-summary",
+      "stepIndex": 6,
+      "type": "step.done",
+      "summary": "流程结束",
+      "links": [
+        "steps/06-b-summary/output.md"
+      ]
+    }
+  ]
+}

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2026-03-02
+
+### Added
+- `agent-handoff index`：workspace registry 与索引落盘（index.json）
+- `agent-handoff search`：跨 workspace 关键字搜索与过滤
+- `agent-handoff diff`：workspace/artifact 差异对比（text/markdown/json）
+- `agent-handoff stats`：统计输出（steps 完成率、events 计数、时长）
+
 ## [0.4.0] - 2026-03-02
 
 ### Added

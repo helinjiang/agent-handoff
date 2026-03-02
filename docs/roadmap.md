@@ -12,7 +12,7 @@
 | v0.2 | 增强 | validation + clipboard + events.jsonl 规范化 | ✅ 完成 |
 | v0.3 | 自动化 | TRAE UI 自动化 adapter（可选） | ✅ 完成 |
 | v0.4 | 可视化 | Web Timeline Viewer（静态导出） | ✅ 完成 |
-| v0.5 | 扩展 | 多 workspace 索引、搜索、diff | 💡 设想中 |
+| v0.5 | 扩展 | 多 workspace 索引、搜索、diff、统计 | ✅ 完成 |
 
 ---
 
@@ -277,6 +277,17 @@
 2. **搜索** - 跨 workspace 搜索产物
 3. **diff** - 对比不同版本的产物
 4. **统计** - 工作流执行统计
+
+### 任务清单
+
+任务拆分与 Prompt 对齐：见 `docs/prompts/v0.5/`。
+
+| 任务 | 描述 | 优先级 |
+|------|------|--------|
+| V05-01 | Workspace 索引与注册表 | P0 |
+| V05-02 | 跨 workspace 搜索 | P0 |
+| V05-03 | Workspace / Artifact diff | P1 |
+| V05-04 | 统计与报表 | P1 |
 
 ---
 
