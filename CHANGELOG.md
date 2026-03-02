@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-03-02
+
+### Added
+- `agent-handoff export --format web`：导出静态 Web Timeline Viewer（离线打开）
+- Timeline Viewer：内联 events 数据，无需网络/服务端
+- Artifact Viewer：将 links 指向的产物导出为可点击的 HTML 页面（`timeline/artifacts/`）
+- Timeline 过滤与搜索：按 stepId/type/workItemId 过滤，关键字匹配 summary/data，并同步 URL 参数
+- events.jsonl 读取模块：支持非法行统计、排序与 limit 裁剪（为 Viewer 提供结构化数据）
+
 ## [0.3.0] - 2026-03-02
 
 ### Added
