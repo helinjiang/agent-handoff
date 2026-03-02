@@ -1,5 +1,4 @@
 import { Command } from 'commander';
-import path from 'path';
 import os from 'os';
 import {
   loadConfig,
@@ -20,7 +19,7 @@ export const configCommand = new Command('config')
       } else if (action === 'init') {
         await initConfig(options);
       } else if (action === 'list') {
-        await listConfig(options);
+        await listConfig();
       } else {
         console.error(`Unknown action: ${action}`);
         console.log('Available actions: show, init, list');
@@ -60,7 +59,7 @@ async function initConfig(options: { global: boolean; verbose: boolean }): Promi
   console.log(JSON.stringify(DEFAULT_CONFIG, null, 2));
 }
 
-async function listConfig(options: { global: boolean; verbose: boolean }): Promise<void> {
+async function listConfig(): Promise<void> {
   console.log('Configuration options:');
   console.log('');
   console.log('  defaultWorkspace     - 默认 workspace 路径');

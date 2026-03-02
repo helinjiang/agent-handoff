@@ -10,7 +10,7 @@
 |------|------|----------|------|
 | v0.1 | MVP | CLI 基础 + workspace 管理 + TRAE 辅助模式 | ✅ 完成 |
 | v0.2 | 增强 | validation + clipboard + events.jsonl 规范化 | ✅ 完成 |
-| v0.3 | 自动化 | TRAE UI 自动化 adapter（可选） | ✅ 完成（未发布） |
+| v0.3 | 自动化 | TRAE UI 自动化 adapter（可选） | ✅ 完成 |
 | v0.4 | 可视化 | Web Timeline Viewer（静态导出） | 💡 设想中 |
 | v0.5 | 扩展 | 多 workspace 索引、搜索、diff | 💡 设想中 |
 

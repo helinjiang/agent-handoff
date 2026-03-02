@@ -134,6 +134,7 @@ function getDefaultSummary(eventType: EventType, stepId: string): string {
     'accept.failed': '验收失败',
     'issue.raised': '发现问题',
     'handoff.sent': '已交接给下一步',
+    'automation.session': '自动化会话已记录',
   };
   return summaries[eventType] || `事件: ${eventType}`;
 }
