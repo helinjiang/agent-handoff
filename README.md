@@ -65,11 +65,45 @@ agent-handoff status [workspace] [--json]
 输出下一步执行指令和 prompt。
 
 ```bash
-agent-handoff next [workspace]
+agent-handoff next [workspace] [--copy] [--no-event]
 ```
 
 参数：
 - `[workspace]` - workspace 路径（默认当前目录）
+- `--copy, -c` - 复制 prompt 到剪贴板
+- `--no-event` - 不写入 events.jsonl
+
+### validate
+
+校验 workflow 与产物结构。
+
+```bash
+agent-handoff validate [workspace]
+```
+
+### advance
+
+手动推进 workflow 状态，并可写入事件。
+
+```bash
+agent-handoff advance [workspace]
+```
+
+### config
+
+查看或生成配置文件。
+
+```bash
+agent-handoff config [workspace]
+```
+
+### report
+
+读取 workspace 下的自动化操作日志并生成报告（json/markdown/html）。
+
+```bash
+agent-handoff report [workspace] [--format markdown|json|html] [--session <id>] [--screenshots] [--output <path>]
+```
 
 ## Workspace 结构
 

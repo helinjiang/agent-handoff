@@ -210,11 +210,11 @@ state.json（v0 简化）：
 - 输出规范化 Task 命名与回填指引
 
 ### v0.3：自动模式（可选）
-- 通过视觉/模板匹配实现：点击"+新任务"→输入→提交→等待✅
+- 通过桌面自动化实现：激活窗口→快捷键/视觉匹配→输入→提交
 - 记录动作日志与关键截图
 - 失败可降级到辅助模式
 
-> UI 自动化仅属于 adapter-trae，不进入 core。
+> UI 自动化属于 adapter-trae（基于 Nut.js），不进入 core。
 
 
 ## 9. EventLog 与 Web 时间线（规划）
@@ -225,12 +225,13 @@ state.json（v0 简化）：
 - stage/step：`step.started`、`step.done`
 - artifacts：`artifact.updated`
 - handoff：`handoff.sent`
+- automation：`automation.session`
 - issues：`issue.raised`
 - verify：`verify.passed`、`verify.failed`
 - accept：`accept.passed`、`accept.failed`
 - workflow：`workflow.updated`
 
-每条事件包含：时间、step、类型、关联产物、摘要、元信息。
+每条事件包含：时间、step、类型、关联产物、摘要、元信息（可扩展 data 字段）。
 
 Web Viewer（v0.4 规划）：
 - Timeline：按时间线展示 events

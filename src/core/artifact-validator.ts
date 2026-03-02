@@ -130,7 +130,7 @@ export async function validateArtifactFile(
   try {
     const content = await fs.readFile(filePath, 'utf-8');
     return validateArtifact(content);
-  } catch (error) {
+  } catch {
     return {
       valid: false,
       errors: [

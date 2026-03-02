@@ -9,6 +9,14 @@ export interface AgentHandoffConfig {
     logStepStarted: boolean;
     logStepDone: boolean;
   };
+  automation?: {
+    enabled: boolean;
+    provider: 'nutjs';
+    screenshot: boolean;
+    timeout: number;
+    retries: number;
+    confidence?: number;
+  };
   clipboard?: {
     autoCopy: boolean;
   };
@@ -27,6 +35,14 @@ export const DEFAULT_CONFIG: AgentHandoffConfig = {
     enabled: true,
     logStepStarted: true,
     logStepDone: true,
+  },
+  automation: {
+    enabled: false,
+    provider: 'nutjs',
+    screenshot: false,
+    timeout: 30000,
+    retries: 3,
+    confidence: 0.8,
   },
   clipboard: {
     autoCopy: false,
