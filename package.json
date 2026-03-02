@@ -3,9 +3,27 @@
   "version": "0.1.0",
   "description": "轻量级多 Agent 协作接力工具",
   "type": "module",
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "agent",
+    "workflow",
+    "ai-coding",
+    "trae",
+    "collaboration"
+  ],
   "bin": {
     "agent-relay": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
