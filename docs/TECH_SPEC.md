@@ -188,7 +188,7 @@ state.json（v0 简化）：
 - `agent-handoff status <workspace>`：显示当前 step、缺失/完成情况
 - `agent-handoff next <workspace>`：输出下一步执行指令 + 该 step 的 prompt（TRAE assisted）
 - `agent-handoff validate <workspace>`（可选）：校验 workflow 与产物结构
-- `agent-handoff export --format=web <workspace>`（规划）：导出静态时间线页面
+- `agent-handoff export --format=web <workspace>`：导出静态时间线页面
 
 `next` 输出应包含：
 - step 序号/ID
@@ -233,10 +233,10 @@ state.json（v0 简化）：
 
 每条事件包含：时间、step、类型、关联产物、摘要、元信息（可扩展 data 字段）。
 
-Web Viewer（v0.4 规划）：
+Web Viewer（v0.4 已实现）：
 - Timeline：按时间线展示 events
 - 点击事件展开查看关联产物（input/output）
-- 支持过滤（step/executor/issue）
+- 支持过滤与搜索（step/type/workItemId，关键字匹配 summary/data）
 
 形态优先：`export --format=web` 静态导出（易分享/归档）。
 

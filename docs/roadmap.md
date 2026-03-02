@@ -11,7 +11,7 @@
 | v0.1 | MVP | CLI 基础 + workspace 管理 + TRAE 辅助模式 | ✅ 完成 |
 | v0.2 | 增强 | validation + clipboard + events.jsonl 规范化 | ✅ 完成 |
 | v0.3 | 自动化 | TRAE UI 自动化 adapter（可选） | ✅ 完成 |
-| v0.4 | 可视化 | Web Timeline Viewer（静态导出） | 💡 设想中 |
+| v0.4 | 可视化 | Web Timeline Viewer（静态导出） | ✅ 完成 |
 | v0.5 | 扩展 | 多 workspace 索引、搜索、diff | 💡 设想中 |
 
 ---
@@ -253,12 +253,15 @@
 
 ### 任务清单
 
+任务拆分与 Prompt 对齐：见 `docs/prompts/v0.4/`。
+
 | 任务 | 描述 | 优先级 |
 |------|------|--------|
-| T-020 | Timeline 组件 | P0 |
-| T-021 | 产物查看器 | P0 |
-| T-022 | 静态导出命令 | P0 |
-| T-023 | 过滤与搜索 | P1 |
+| V04-01 | events.jsonl 读取与规范化 | P0 |
+| V04-02 | Timeline 静态页面生成（基础 UI） | P0 |
+| V04-03 | Artifact 页面生成与链接 | P0 |
+| V04-04 | export 命令（静态导出 Web Timeline） | P0 |
+| V04-05 | 过滤与搜索（前端交互） | P1 |
 
 ---
 

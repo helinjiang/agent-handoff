@@ -105,6 +105,14 @@ agent-handoff config [workspace]
 agent-handoff report [workspace] [--format markdown|json|html] [--session <id>] [--screenshots] [--output <path>]
 ```
 
+### export
+
+导出静态 Web Timeline Viewer（离线 HTML，可直接打开）。
+
+```bash
+agent-handoff export [workspace] --format web [--output <dir>] [--limit <n>]
+```
+
 ## Workspace 结构
 
 ```

@@ -1,0 +1,159 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: #111827;
+  background: #ffffff;
+}
+
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.meta {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.filters {
+  margin: 12px 0 16px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.filters-row input,
+.filters-row select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  background: #fff;
+}
+
+.filters-row button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+}
+
+.filters-row button:hover {
+  background: #f3f4f6;
+}
+
+.filters-meta {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.ts {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  color: #374151;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #dbeafe;
+}
+
+.type {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  color: #111827;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.summary {
+  margin-top: 8px;
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+.links {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.links a {
+  font-size: 12px;
+  color: #2563eb;
+  text-decoration: none;
+  border-bottom: 1px dashed #93c5fd;
+}
+
+.links a:hover {
+  border-bottom-style: solid;
+}
+
+details {
+  margin-top: 10px;
+}
+
+pre {
+  background: #0b1020;
+  color: #e5e7eb;
+  padding: 10px;
+  border-radius: 10px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.5;
+}
