@@ -4,12 +4,14 @@ import { loadWorkspace } from '../../core/workspace.js';
 import { computeState, getCurrentStep } from '../../core/state-machine.js';
 import { generatePrompt } from '../../core/prompt-generator.js';
 import { copyToClipboard, isClipboardSupported } from '../../core/clipboard.js';
+import { writeEvent } from '../../core/events-writer.js';
 
 export const nextCommand = new Command('next')
   .description('输出下一步执行指令和 prompt')
   .argument('[workspace]', 'workspace 路径', '.')
   .option('-c, --copy', '复制 prompt 到剪贴板')
-  .action(async (workspace: string, options: { copy: boolean }) => {
+  .option('--no-event', '不写入事件日志')
+  .action(async (workspace: string, options: { copy: boolean; event: boolean }) => {
     const workspacePath = path.resolve(workspace);
 
     try {
@@ -73,6 +75,17 @@ export const nextCommand = new Command('next')
       console.log(prompt);
       console.log('────────────────────────────────────────');
       console.log('');
+
+      if (options.event) {
+        await writeEvent({
+          workspacePath,
+          step: { index: index + 1, id: step.id },
+          type: 'step.started',
+          summary: `开始执行步骤: ${step.id}`,
+          workItemId: step.workItemId,
+          links: [step.input],
+        });
+      }
 
       if (options.copy) {
         if (!isClipboardSupported()) {
