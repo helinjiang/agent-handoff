@@ -1,6 +1,6 @@
 {
   "name": "agent-handoff",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "轻量级多 Agent 协作接力工具",
   "type": "module",
   "author": "helinjiang",
@@ -33,6 +33,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "clipboardy": "^5.3.1",
     "commander": "^12.0.0",
     "yaml": "^2.4.0"
   },

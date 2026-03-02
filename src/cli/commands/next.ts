@@ -3,12 +3,15 @@ import path from 'path';
 import { loadWorkspace } from '../../core/workspace.js';
 import { computeState, getCurrentStep } from '../../core/state-machine.js';
 import { generatePrompt } from '../../core/prompt-generator.js';
+import { copyToClipboard, isClipboardSupported } from '../../core/clipboard.js';
+import { writeEvent } from '../../core/events-writer.js';
 
 export const nextCommand = new Command('next')
   .description('输出下一步执行指令和 prompt')
   .argument('[workspace]', 'workspace 路径', '.')
-  .option('-c, --copy', '复制 prompt 到剪贴板（v0.2）')
-  .action(async (workspace: string, options: { copy: boolean }) => {
+  .option('-c, --copy', '复制 prompt 到剪贴板')
+  .option('--no-event', '不写入事件日志')
+  .action(async (workspace: string, options: { copy: boolean; event: boolean }) => {
     const workspacePath = path.resolve(workspace);
 
     try {
@@ -72,11 +75,34 @@ export const nextCommand = new Command('next')
       console.log(prompt);
       console.log('────────────────────────────────────────');
       console.log('');
-      console.log('提示：将上述 Prompt 复制到 TRAE 新 Task 中执行');
+
+      if (options.event) {
+        await writeEvent({
+          workspacePath,
+          step: { index: index + 1, id: step.id },
+          type: 'step.started',
+          summary: `开始执行步骤: ${step.id}`,
+          workItemId: step.workItemId,
+          links: [step.input],
+        });
+      }
 
       if (options.copy) {
-        console.log('');
-        console.log('注意：剪贴板功能将在 v0.2 版本实现');
+        if (!isClipboardSupported()) {
+          console.log('⚠️  剪贴板功能在当前环境不可用');
+          console.log('请手动复制上面的 Prompt');
+        } else {
+          const result = await copyToClipboard(prompt);
+          if (result.success) {
+            console.log('✅ Prompt 已复制到剪贴板');
+          } else {
+            console.log(`❌ 复制失败: ${result.error}`);
+            console.log('请手动复制上面的 Prompt');
+          }
+        }
+      } else {
+        console.log('提示：将上述 Prompt 复制到 TRAE 新 Task 中执行');
+        console.log('      使用 --copy 选项可自动复制到剪贴板');
       }
     } catch (error) {
       console.error(`Error: ${error}`);

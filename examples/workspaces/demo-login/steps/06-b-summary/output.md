@@ -1,5 +1,9 @@
 # summary：登录能力交付总结（示例）
 
+## 产物更新
+- 更新：总结文档
+- 归档：事件日志与产物
+
 ## 本轮交付内容
 - 注册：POST /auth/register
 - 登录：POST /auth/login（Session Cookie, HTTP-only）
@@ -18,6 +22,11 @@
 - 登录失败统一提示：不泄露用户存在性
 - 验收以可复现脚本为准：降低沟通成本
 
+## 风险与待确认
+- 生产环境需配置 HTTPS 和 secure cookie
+- session store 需从内存迁移到 Redis
+- 后续需补充 CSRF 和 CORS 策略
+
 ## 事件时间线（可用于 Web Viewer）
 - a-clarify → b-plan → login-implement → login-test → login-accept → b-summary
 - 详见 events.jsonl（支持按 workItemId=login 过滤）
@@ -31,3 +40,7 @@
 ## 收尾动作
 - 将 state.json 标记 done（本示例已 done）
 - 归档产物与事件日志，后续可 export web timeline
+
+## 下一步交接
+- 工作流已完成，无下一步
+- 可基于本示例创建新的工作流继续开发其他功能
