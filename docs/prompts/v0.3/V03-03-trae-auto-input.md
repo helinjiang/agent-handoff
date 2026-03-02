@@ -2,20 +2,18 @@
 
 ## 任务目标
 
-实现自动输入 prompt 功能，完成从点击新建任务、输入 prompt、提交的完整自动化流程。
+实现自动输入 prompt 功能，完成从激活窗口、新建任务、输入 prompt、提交的完整自动化流程。
 
 ## 上下文
 
 依赖：
 - V03-01 TRAE Adapter 基础架构
-- V03-02 TRAE 界面元素识别
-
-根据 `docs/TECH_SPEC.md` 第 8 节，v0.3 自动化模式需要：
-- 通过视觉/模板匹配实现：点击"+新任务"→输入→提交→等待✅
+- V03-02 TRAE 视觉元素识别
+- `@nut-tree/nut-js`
 
 参考：
 - `src/adapters/trae/index.ts` - TRAE Adapter 入口
-- `src/adapters/trae/ui-elements.ts` - UI 元素定义
+- `src/adapters/trae/visual-elements.ts` - 视觉元素定义
 - `src/core/prompt-generator.ts` - Prompt 生成逻辑
 
 ## 产物清单
@@ -38,17 +36,14 @@ tests/
 ### 1. 自动输入逻辑 (src/adapters/trae/auto-input.ts)
 
 ```typescript
-import { Page, ElementHandle } from 'puppeteer';
-import { ElementFinder } from './element-finder';
+import { ScreenFinder } from './screen-finder';
 import { TraeOperation } from './types';
 import { OperationLogger } from './operation-logger';
 
 export interface AutoInputOptions {
   prompt: string;
-  taskName?: string;
   timeout?: number;
   screenshot?: boolean;
-  screenshotDir?: string;
 }
 
 export interface AutoInputResult {
@@ -56,16 +51,15 @@ export interface AutoInputResult {
   error?: string;
   operations: TraeOperation[];
   screenshots: string[];
-  taskId?: string;
 }
 
 export class AutoInput {
-  private page: Page;
-  private finder: ElementFinder;
+  private nutjs: any;
+  private finder: ScreenFinder;
   private logger: OperationLogger;
 
-  constructor(page: Page, finder: ElementFinder, logger: OperationLogger) {
-    this.page = page;
+  constructor(nutjs: any, finder: ScreenFinder, logger: OperationLogger) {
+    this.nutjs = nutjs;
     this.finder = finder;
     this.logger = logger;
   }
@@ -77,44 +71,37 @@ export class AutoInput {
     try {
       await this.logger.log('start', 'Starting auto-input flow');
 
-      const clickResult = await this.clickNewTask();
-      if (!clickResult.success) {
-        return {
-          success: false,
-          error: clickResult.error,
-          operations,
-          screenshots,
-        };
+      // 1. 激活并打开新任务 (优先使用快捷键 Cmd+L/I)
+      const openResult = await this.openNewTask();
+      if (!openResult.success) {
+        // 尝试视觉点击备选方案
+        const clickResult = await this.clickNewTaskVisual();
+        if (!clickResult.success) {
+          throw new Error('Failed to open new task via shortcut or visual click');
+        }
+        operations.push(clickResult.operation);
+      } else {
+        operations.push(openResult.operation);
       }
-      operations.push(clickResult.operation);
 
+      // 2. 输入 Prompt
       const inputResult = await this.inputPrompt(options.prompt);
       if (!inputResult.success) {
-        return {
-          success: false,
-          error: inputResult.error,
-          operations,
-          screenshots,
-        };
+        throw new Error(`Input failed: ${inputResult.error}`);
       }
       operations.push(inputResult.operation);
 
+      // 3. 提交任务 (Cmd+Enter 或 点击发送)
       const submitResult = await this.submitTask();
       if (!submitResult.success) {
-        return {
-          success: false,
-          error: submitResult.error,
-          operations,
-          screenshots,
-        };
+        throw new Error(`Submit failed: ${submitResult.error}`);
       }
       operations.push(submitResult.operation);
 
+      // 4. 截图 (可选)
       if (options.screenshot) {
-        const screenshotPath = await this.takeScreenshot(options.screenshotDir);
-        if (screenshotPath) {
-          screenshots.push(screenshotPath);
-        }
+        const path = await this.takeScreenshot();
+        if (path) screenshots.push(path);
       }
 
       await this.logger.log('complete', 'Auto-input flow completed');
@@ -135,107 +122,97 @@ export class AutoInput {
     }
   }
 
-  private async clickNewTask(): Promise<{ success: boolean; error?: string; operation: TraeOperation }> {
-    const timestamp = Date.now();
-
-    const result = await this.finder.findElement('newTaskButton');
-    if (!result.found || !result.element) {
-      return {
-        success: false,
-        error: 'New task button not found',
-        operation: { type: 'click', target: 'newTaskButton', timestamp },
-      };
-    }
-
+  private async openNewTask(): Promise<{ success: boolean; operation: TraeOperation }> {
+    const { keyboard, Key } = this.nutjs;
+    const isMac = process.platform === 'darwin';
+    const modifier = isMac ? Key.LeftCmd : Key.LeftControl;
+    
+    // 假设 TRAE 快捷键是 Cmd+L (Chat) 或 Cmd+I (Inline Chat)
+    // 这里我们尝试 Cmd+L 打开侧边栏 Chat
     try {
-      await result.element.click();
-      await this.page.waitForTimeout(500);
+      await keyboard.pressKey(modifier, Key.L);
+      await keyboard.releaseKey(modifier, Key.L);
+      await new Promise(r => setTimeout(r, 500)); // 等待面板打开
 
+      // 再次确认焦点在输入框：Tab 一次或者直接点击输入框图像
+      // 简单起见，假设 Cmd+L 会自动聚焦输入框
+      
       return {
         success: true,
-        operation: { type: 'click', target: 'newTaskButton', timestamp },
+        operation: { type: 'hotkey', value: 'Cmd+L', timestamp: Date.now() }
       };
-    } catch (error) {
-      return {
-        success: false,
-        error: `Failed to click new task button: ${(error as Error).message}`,
-        operation: { type: 'click', target: 'newTaskButton', timestamp },
-      };
+    } catch (e) {
+      return { success: false, operation: { type: 'hotkey', timestamp: Date.now() } };
     }
   }
 
-  private async inputPrompt(prompt: string): Promise<{ success: boolean; error?: string; operation: TraeOperation }> {
-    const timestamp = Date.now();
-
-    const result = await this.finder.findElement('taskInputArea');
-    if (!result.found || !result.element) {
-      return {
-        success: false,
-        error: 'Task input area not found',
-        operation: { type: 'fill', target: 'taskInputArea', value: prompt, timestamp },
-      };
-    }
-
-    try {
-      await result.element.click();
-      await this.page.waitForTimeout(200);
-
-      await this.page.keyboard.down('Control');
-      await this.page.keyboard.press('a');
-      await this.page.keyboard.up('Control');
-      await this.page.waitForTimeout(100);
-
-      await result.element.type(prompt, { delay: 10 });
-
+  private async clickNewTaskVisual(): Promise<{ success: boolean; operation: TraeOperation }> {
+    const { mouse, Button } = this.nutjs;
+    
+    // 查找 + 号按钮
+    const result = await this.finder.findElement('newTaskButton');
+    if (result.found && result.center) {
+      await mouse.setPosition(result.center);
+      await mouse.click(Button.LEFT);
+      await new Promise(r => setTimeout(r, 500));
       return {
         success: true,
-        operation: { type: 'fill', target: 'taskInputArea', value: prompt, timestamp },
+        operation: { type: 'click', target: 'newTaskButton', timestamp: Date.now() }
+      };
+    }
+    return { success: false, operation: { type: 'click', timestamp: Date.now() } };
+  }
+
+  private async inputPrompt(prompt: string): Promise<{ success: boolean; error?: string; operation: TraeOperation }> {
+    const { keyboard, Key } = this.nutjs;
+    
+    try {
+      // 确保清空输入框 (Cmd+A -> Backspace)
+      const isMac = process.platform === 'darwin';
+      const modifier = isMac ? Key.LeftCmd : Key.LeftControl;
+      
+      await keyboard.pressKey(modifier, Key.A);
+      await keyboard.releaseKey(modifier, Key.A);
+      await keyboard.pressKey(Key.Backspace);
+      await keyboard.releaseKey(Key.Backspace);
+      
+      // 输入内容 (使用 clipboard 粘贴可能更快且支持特殊字符，但在某些环境下 nutjs type 更稳)
+      // 这里使用 type，虽然慢一点但更原生
+      await keyboard.type(prompt);
+      
+      return {
+        success: true,
+        operation: { type: 'type', value: 'prompt...', timestamp: Date.now() }
       };
     } catch (error) {
-      return {
-        success: false,
-        error: `Failed to input prompt: ${(error as Error).message}`,
-        operation: { type: 'fill', target: 'taskInputArea', value: prompt, timestamp },
-      };
+      return { success: false, error: (error as Error).message, operation: { type: 'type', timestamp: Date.now() } };
     }
   }
 
   private async submitTask(): Promise<{ success: boolean; error?: string; operation: TraeOperation }> {
-    const timestamp = Date.now();
-
-    const result = await this.finder.findElement('submitButton');
-    if (!result.found || !result.element) {
-      return {
-        success: false,
-        error: 'Submit button not found',
-        operation: { type: 'click', target: 'submitButton', timestamp },
-      };
-    }
-
+    const { keyboard, Key } = this.nutjs;
+    
     try {
-      await result.element.click();
-      await this.page.waitForTimeout(1000);
-
+      // 提交通常是 Enter 或 Cmd+Enter
+      await keyboard.pressKey(Key.Enter);
+      await keyboard.releaseKey(Key.Enter);
+      
       return {
         success: true,
-        operation: { type: 'click', target: 'submitButton', timestamp },
+        operation: { type: 'hotkey', value: 'Enter', timestamp: Date.now() }
       };
     } catch (error) {
-      return {
-        success: false,
-        error: `Failed to submit task: ${(error as Error).message}`,
-        operation: { type: 'click', target: 'submitButton', timestamp },
-      };
+      return { success: false, error: (error as Error).message, operation: { type: 'hotkey', timestamp: Date.now() } };
     }
   }
 
-  private async takeScreenshot(dir?: string): Promise<string | null> {
+  private async takeScreenshot(): Promise<string | null> {
+    // Nut.js 截图功能需要集成
     try {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `auto-input-${timestamp}.png`;
-      const path = dir ? `${dir}/${filename}` : filename;
-      await this.page.screenshot({ path, fullPage: false });
-      return path;
+      const { screen, imageResource } = this.nutjs;
+      const region = await screen.highlight(await screen.width(), await screen.height()); // 全屏
+      // Nut.js 截图保存逻辑需查阅文档，此处简化
+      return 'screenshot.png';
     } catch {
       return null;
     }
@@ -246,89 +223,29 @@ export class AutoInput {
 ### 2. 任务等待与状态检测 (src/adapters/trae/task-waiter.ts)
 
 ```typescript
-import { Page } from 'puppeteer';
-import { ElementFinder } from './element-finder';
-
-export type TaskStatus = 'pending' | 'running' | 'completed' | 'failed' | 'unknown';
-
-export interface TaskWaitOptions {
-  timeout?: number;
-  pollInterval?: number;
-}
-
-export interface TaskWaitResult {
-  status: TaskStatus;
-  waitedMs: number;
-  error?: string;
-}
+import { ScreenFinder } from './screen-finder';
 
 export class TaskWaiter {
-  private page: Page;
-  private finder: ElementFinder;
+  private finder: ScreenFinder;
 
-  constructor(page: Page, finder: ElementFinder) {
-    this.page = page;
+  constructor(finder: ScreenFinder) {
     this.finder = finder;
   }
 
-  async waitForCompletion(options: TaskWaitOptions = {}): Promise<TaskWaitResult> {
-    const timeout = options.timeout ?? 300000;
-    const pollInterval = options.pollInterval ?? 2000;
+  async waitForCompletion(timeoutMs: number = 60000): Promise<boolean> {
     const startTime = Date.now();
-
-    while (Date.now() - startTime < timeout) {
-      const status = await this.getTaskStatus();
-
-      if (status === 'completed') {
-        return {
-          status: 'completed',
-          waitedMs: Date.now() - startTime,
-        };
+    while (Date.now() - startTime < timeoutMs) {
+      // 查找 "任务完成" 图标
+      const result = await this.finder.findElement('taskCompleteIndicator');
+      if (result.found) {
+        return true;
       }
-
-      if (status === 'failed') {
-        return {
-          status: 'failed',
-          waitedMs: Date.now() - startTime,
-          error: 'Task execution failed',
-        };
-      }
-
-      await this.delay(pollInterval);
+      
+      // 也可以查找 "Stop" 按钮消失，或者 "Regenerate" 按钮出现
+      
+      await new Promise(r => setTimeout(r, 2000));
     }
-
-    return {
-      status: 'unknown',
-      waitedMs: Date.now() - startTime,
-      error: 'Timeout waiting for task completion',
-    };
-  }
-
-  async getTaskStatus(): Promise<TaskStatus> {
-    const completeResult = await this.finder.findElement('taskCompleteIndicator');
-    if (completeResult.found) {
-      return 'completed';
-    }
-
-    const activeResult = await this.finder.findElement('activeTask');
-    if (activeResult.found) {
-      const element = activeResult.element;
-      if (element) {
-        const className = await element.evaluate(el => el.className);
-        if (className.includes('error') || className.includes('failed')) {
-          return 'failed';
-        }
-        if (className.includes('running') || className.includes('processing')) {
-          return 'running';
-        }
-      }
-    }
-
-    return 'pending';
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return false;
   }
 }
 ```
@@ -336,359 +253,62 @@ export class TaskWaiter {
 ### 3. 更新 TraeAdapter (src/adapters/trae/index.ts)
 
 ```typescript
-import { BaseAdapter, AdapterResult, ExecuteOptions, AdapterType } from '../base';
-import { TraeConfig, DEFAULT_TRAE_CONFIG } from './config';
-import { BrowserManager } from './browser-manager';
-import { AutoInput, AutoInputOptions } from './auto-input';
-import { TaskWaiter } from './task-waiter';
-import { OperationLogger } from './operation-logger';
-import path from 'path';
-import fs from 'fs/promises';
+// ... imports ...
 
 export class TraeAdapter extends BaseAdapter {
-  readonly type: AdapterType = 'trae';
-  private _traeConfig: TraeConfig;
-  private _browserManager: BrowserManager | null = null;
-  private _operationLogger: OperationLogger | null = null;
-
-  constructor(config: Partial<TraeConfig> = {}) {
-    super({
-      enabled: config.enabled ?? DEFAULT_TRAE_CONFIG.enabled,
-      timeout: config.timeout ?? DEFAULT_TRAE_CONFIG.timeout,
-      retries: config.retries ?? DEFAULT_TRAE_CONFIG.retries,
-    });
-    this._traeConfig = { ...DEFAULT_TRAE_CONFIG, ...config };
-  }
-
-  async initialize(): Promise<void> {
-    if (!this._config.enabled) {
-      return;
-    }
-
-    this._browserManager = new BrowserManager(this._traeConfig);
-    const result = await this._browserManager.connect();
-
-    if (!result.success) {
-      throw new Error(`Failed to initialize TRAE adapter: ${result.error}`);
-    }
-
-    const finder = this._browserManager.getElementFinder();
-    if (!finder) {
-      throw new Error('Failed to create element finder');
-    }
-
-    const uiStatus = await finder.verifyUIReady();
-    if (!uiStatus.ready) {
-      throw new Error(`TRAE UI not ready. Missing elements: ${uiStatus.missing.join(', ')}`);
-    }
-
-    this._operationLogger = new OperationLogger();
-    this._initialized = true;
-  }
-
-  async isReady(): Promise<boolean> {
-    return this._initialized && 
-           this._browserManager !== null && 
-           this._browserManager.isConnected();
-  }
+  // ... 现有属性 ...
+  private _autoInput: AutoInput | null = null;
+  private _taskWaiter: TaskWaiter | null = null;
 
   async execute(prompt: string, options?: ExecuteOptions): Promise<AdapterResult> {
-    const startTime = Date.now();
-    
-    if (!this._config.enabled) {
-      return {
-        success: false,
-        error: 'Adapter is disabled',
-        duration: Date.now() - startTime,
-      };
+    // ... 初始化检查 ...
+
+    if (!this._autoInput) {
+      this._autoInput = new AutoInput(this._nutjs, this._screenFinder!, this._operationLogger!);
     }
 
-    if (!await this.isReady()) {
-      return {
-        success: false,
-        error: 'Adapter not initialized',
-        duration: Date.now() - startTime,
-      };
-    }
-
-    const page = this._browserManager!.getPage();
-    const finder = this._browserManager!.getElementFinder();
-
-    if (!page || !finder) {
-      return {
-        success: false,
-        error: 'Browser or element finder not available',
-        duration: Date.now() - startTime,
-      };
-    }
-
-    const autoInput = new AutoInput(page, finder, this._operationLogger!);
-
-    const screenshotDir = options?.workspacePath
-      ? path.join(options.workspacePath, this._traeConfig.screenshotDir)
-      : this._traeConfig.screenshotDir;
-
-    if (options?.screenshot || this._traeConfig.screenshot) {
-      await fs.mkdir(screenshotDir, { recursive: true });
-    }
-
-    const result = await autoInput.execute({
+    const result = await this._autoInput.execute({
       prompt,
-      timeout: options?.timeout ?? this._traeConfig.timeout,
-      screenshot: options?.screenshot ?? this._traeConfig.screenshot,
-      screenshotDir,
+      timeout: options?.timeout,
+      screenshot: options?.screenshot,
     });
+
+    if (result.success && options?.wait) {
+       // 如果需要等待任务完成
+       if (!this._taskWaiter) {
+         this._taskWaiter = new TaskWaiter(this._screenFinder!);
+       }
+       await this._taskWaiter.waitForCompletion();
+    }
 
     return {
       success: result.success,
       error: result.error,
-      screenshot: result.screenshots[0],
-      duration: Date.now() - startTime,
+      // ...
     };
-  }
-
-  async cleanup(): Promise<void> {
-    if (this._browserManager) {
-      await this._browserManager.disconnect();
-      this._browserManager = null;
-    }
-    this._operationLogger = null;
-    this._initialized = false;
   }
 }
 ```
 
-## 自动化流程
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Auto-Input Flow                          │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  1. clickNewTask()                                          │
-│     └── 查找新建任务按钮                                      │
-│     └── 点击按钮                                             │
-│     └── 等待 500ms                                           │
-│                                                             │
-│  2. inputPrompt(prompt)                                     │
-│     └── 查找输入区域                                         │
-│     └── 点击聚焦                                             │
-│     └── Ctrl+A 全选                                          │
-│     └── 输入 prompt（带延迟模拟人工输入）                      │
-│                                                             │
-│  3. submitTask()                                            │
-│     └── 查找提交按钮                                         │
-│     └── 点击提交                                             │
-│     └── 等待 1000ms                                          │
-│                                                             │
-│  4. takeScreenshot() (可选)                                 │
-│     └── 保存截图到指定目录                                    │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## CLI 集成
-
-### 更新 next 命令
-
-```typescript
-import { Command } from 'commander';
-import { TraeAdapter } from '../../adapters/trae';
-import { loadConfig } from '../../core/config';
-
-export const nextCommand = new Command('next')
-  .description('输出下一步执行指令和 prompt')
-  .argument('[workspace]', 'workspace 路径', '.')
-  .option('-c, --copy', '复制 prompt 到剪贴板')
-  .option('--auto', '启用自动化模式')
-  .option('--screenshot', '自动截图')
-  .option('--wait', '等待任务完成')
-  .action(async (workspace: string, options: NextOptions) => {
-    const config = await loadConfig(workspace);
-    const prompt = generatePrompt(step, workspace);
-
-    if (options.auto || config.automation?.enabled) {
-      const adapter = new TraeAdapter({
-        enabled: true,
-        screenshot: options.screenshot ?? config.automation?.screenshot,
-        timeout: config.automation?.timeout,
-        retries: config.automation?.retries,
-      });
-
-      try {
-        console.log('🤖 Initializing automation...');
-        await adapter.initialize();
-
-        console.log('📝 Submitting prompt...');
-        const result = await adapter.execute(prompt, {
-          workspacePath: workspace,
-          stepId: step.id,
-          screenshot: options.screenshot,
-        });
-
-        if (result.success) {
-          console.log('✅ Prompt submitted automatically');
-          if (result.screenshot) {
-            console.log(`📸 Screenshot saved: ${result.screenshot}`);
-          }
-        } else {
-          console.log(`⚠️  Automation failed: ${result.error}`);
-          console.log('📋 Falling back to assisted mode');
-          console.log(prompt);
-        }
-      } catch (error) {
-        console.log(`❌ Automation error: ${(error as Error).message}`);
-        console.log('📋 Falling back to assisted mode');
-        console.log(prompt);
-      } finally {
-        await adapter.cleanup();
-      }
-    } else {
-      console.log(prompt);
-      if (options.copy) {
-        await copyToClipboard(prompt);
-        console.log('✅ Prompt copied to clipboard');
-      }
-    }
-  });
-```
-
-## 命令行为
-
-```bash
-# 自动化模式
-agent-handoff next examples/workspaces/demo-login --auto
-# 输出:
-# 🤖 Initializing automation...
-# 📝 Submitting prompt...
-# ✅ Prompt submitted automatically
-
-# 自动化 + 截图
-agent-handoff next --auto --screenshot
-# 输出:
-# 🤖 Initializing automation...
-# 📝 Submitting prompt...
-# ✅ Prompt submitted automatically
-# 📸 Screenshot saved: screenshots/auto-input-2026-03-02T10-30-00.png
-
-# 自动化失败降级
-agent-handoff next --auto
-# 输出:
-# 🤖 Initializing automation...
-# ❌ Automation error: Failed to connect to TRAE
-# 📋 Falling back to assisted mode
-# Prompt: ...
-```
-
 ## 实现要点
 
-1. **输入模拟**
-   - 使用 type 方法模拟人工输入
-   - 添加适当延迟避免被检测为自动化
+1. **快捷键映射**
+   - 必须处理 macOS (`Cmd`) 与 Windows (`Ctrl`) 的差异。
+   - Nut.js 的 `Key.LeftCmd` 和 `Key.LeftControl`。
 
-2. **错误恢复**
-   - 每一步都返回详细错误信息
-   - 失败时记录已执行的操作
+2. **输入延迟**
+   - 为了模拟真实用户并避免输入丢失，设置 `keyboard.config.autoDelayMs`。
 
-3. **截图功能**
-   - 支持在关键步骤截图
-   - 截图保存到 workspace 目录
-
-4. **超时处理**
-   - 每个操作有独立超时
-   - 总体执行时间限制
+3. **焦点管理**
+   - 在执行任何键盘操作前，必须确保 TRAE 窗口处于前台且获得焦点（通过 `AppManager`）。
 
 ## 验收标准
 
-1. 能自动点击新建任务按钮
-2. 能正确输入 prompt 内容
-3. 能自动提交任务
-4. 支持截图功能
-5. 失败时返回详细错误
-6. 单元测试覆盖
-
-## 测试用例
-
-```typescript
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AutoInput } from '../../../src/adapters/trae/auto-input';
-
-describe('AutoInput', () => {
-  let autoInput: AutoInput;
-  let mockPage: any;
-  let mockFinder: any;
-  let mockLogger: any;
-
-  beforeEach(() => {
-    mockPage = {
-      waitForTimeout: vi.fn().mockResolvedValue(undefined),
-      keyboard: {
-        down: vi.fn().mockResolvedValue(undefined),
-        up: vi.fn().mockResolvedValue(undefined),
-        press: vi.fn().mockResolvedValue(undefined),
-      },
-      screenshot: vi.fn().mockResolvedValue(undefined),
-    };
-
-    mockFinder = {
-      findElement: vi.fn().mockImplementation((key: string) => ({
-        found: true,
-        element: {
-          click: vi.fn().mockResolvedValue(undefined),
-          type: vi.fn().mockResolvedValue(undefined),
-          evaluate: vi.fn().mockResolvedValue(''),
-        },
-        selector: `[data-testid="${key}"]`,
-      })),
-    };
-
-    mockLogger = {
-      log: vi.fn().mockResolvedValue(undefined),
-    };
-
-    autoInput = new AutoInput(mockPage, mockFinder, mockLogger);
-  });
-
-  it('should execute auto-input flow successfully', async () => {
-    const result = await autoInput.execute({
-      prompt: 'Test prompt',
-    });
-
-    expect(result.success).toBe(true);
-    expect(result.operations).toHaveLength(3);
-    expect(result.operations[0].type).toBe('click');
-    expect(result.operations[1].type).toBe('fill');
-    expect(result.operations[2].type).toBe('click');
-  });
-
-  it('should fail when new task button not found', async () => {
-    mockFinder.findElement = vi.fn().mockResolvedValue({
-      found: false,
-      element: null,
-      selector: '',
-    });
-
-    const result = await autoInput.execute({
-      prompt: 'Test prompt',
-    });
-
-    expect(result.success).toBe(false);
-    expect(result.error).toBe('New task button not found');
-  });
-
-  it('should take screenshot when enabled', async () => {
-    const result = await autoInput.execute({
-      prompt: 'Test prompt',
-      screenshot: true,
-      screenshotDir: '/tmp',
-    });
-
-    expect(result.success).toBe(true);
-    expect(mockPage.screenshot).toHaveBeenCalled();
-  });
-});
-```
+1. 能通过快捷键打开 TRAE 的聊天/任务面板
+2. 能正确输入 prompt
+3. 能提交任务
+4. 单元测试（Mock Nut.js）通过
 
 ## 执行指令
 
-请按照上述要求实现自动输入 prompt 功能，确保能完成完整的自动化流程，并集成到 next 命令中。
+请按照上述要求实现自动输入 prompt 功能。

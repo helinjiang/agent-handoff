@@ -63,99 +63,30 @@ V03-01 TRAE Adapter 基础架构
 
 ## 技术选型
 
-### Puppeteer
+### Nut.js (Desktop Automation)
 
-选择 Puppeteer 作为自动化框架，原因：
-- 官方维护，稳定可靠
-- 支持 Chrome DevTools Protocol
-- 丰富的 API
-- 支持 headless 和有头模式
-- 活跃的社区
+鉴于 TRAE 是桌面 IDE，直接使用 Puppeteer 需要开启远程调试端口（用户体验不佳）。因此 v0.3 采用 **Nut.js** 进行桌面自动化。
 
-### 安装依赖
+原因：
+- **无侵入性** - 不需要以特定参数启动 TRAE
+- **跨平台** - 支持 macOS, Windows, Linux
+- **视觉驱动** - 基于图像匹配定位元素，符合"视觉自动化"目标
+- **原生模拟** - 模拟真实的键盘鼠标硬件事件
 
-```bash
-pnpm add puppeteer
-pnpm add -D @types/puppeteer
-```
-
-## 安全与权限
-
-v0.3 自动化功能涉及敏感操作，需要特别注意：
-
-1. **默认关闭** - 自动化功能默认禁用，需要显式启用
-2. **权限提示** - 首次使用时提示用户授权
-3. **操作审计** - 所有操作记录到日志
-4. **降级机制** - 失败时自动降级到辅助模式
-
-## CLI 集成
-
-### 新增选项
+### 依赖库
 
 ```bash
-# 启用自动化模式
-agent-handoff next --auto
-
-# 自动化模式 + 截图
-agent-handoff next --auto --screenshot
-
-# 禁用自动化（显式使用辅助模式）
-agent-handoff next --no-auto
-```
-
-### 配置文件
-
-`.agenthandoffrc`:
-```json
-{
-  "automation": {
-    "enabled": false,
-    "provider": "puppeteer",
-    "screenshot": false,
-    "timeout": 30000,
-    "retries": 3
-  }
-}
-```
-
-## 验收标准
-
-每个任务完成后，应满足：
-
-1. 产物文件已创建
-2. 单元测试通过
-3. `pnpm build` 成功
-4. `pnpm typecheck` 无错误
-
-## 最终验收
-
-v0.3 完成标准：
-
-```bash
-# 1. 自动化模式
-agent-handoff next examples/workspaces/demo-login --auto
-# 输出: ✅ Prompt submitted automatically
-#       📸 Screenshot saved: screenshots/2026-03-02/step-03.png
-
-# 2. 降级测试
-agent-handoff next --auto --simulate-error
-# 输出: ⚠️  Automation failed: Element not found
-#       📋 Falling back to assisted mode
-#       Prompt: ...
-
-# 3. 操作日志
-cat examples/workspaces/demo-login/operations.jsonl
-# 显示操作记录
+pnpm add @nut-tree/nut-js
+pnpm add @nut-tree/template-matcher # 图像匹配插件
 ```
 
 ## 风险与缓解
 
 | 风险 | 影响 | 缓解措施 |
 |------|------|----------|
-| TRAE 界面变化 | 元素定位失效 | 使用多种定位策略，提供降级机制 |
-| 权限问题 | 自动化无法启动 | 提前检测权限，提供友好提示 |
-| 性能影响 | 启动慢 | 按需加载 Puppeteer，支持连接已有实例 |
-| 并发问题 | 多任务冲突 | 实现操作队列，支持串行执行 |
+| 分辨率/主题差异 | 图像匹配失效 | 提供多套模板图；优先使用快捷键操作 |
+| 权限拦截 | 无法控制鼠标键盘 | 首次运行引导用户授予"辅助功能"权限 |
+| 窗口焦点丢失 | 操作发送到错误窗口 | 操作前强制激活 TRAE 窗口 |
 
 ## 参考文档
 

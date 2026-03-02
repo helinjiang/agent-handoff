@@ -321,9 +321,10 @@ export interface TraeUIElement {
 }
 
 export interface TraeOperation {
-  type: 'click' | 'fill' | 'wait' | 'screenshot' | 'navigate' | 'scroll' | 'keypress';
-  target: string;
+  type: 'click' | 'type' | 'hotkey' | 'wait' | 'screenshot' | 'activate';
+  target?: string;
   value?: string;
+  modifiers?: string[];
   timestamp: number;
 }
 

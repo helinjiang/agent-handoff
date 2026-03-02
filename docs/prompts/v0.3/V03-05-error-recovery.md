@@ -42,13 +42,11 @@ tests/
 
 ```typescript
 export type AutomationErrorType =
-  | 'connection_failed'
-  | 'element_not_found'
-  | 'element_not_visible'
+  | 'app_not_found'
+  | 'image_not_found'
+  | 'image_not_visible'
   | 'timeout'
   | 'permission_denied'
-  | 'browser_crashed'
-  | 'navigation_failed'
   | 'input_failed'
   | 'submit_failed'
   | 'unknown';
@@ -57,7 +55,7 @@ export interface AutomationError extends Error {
   type: AutomationErrorType;
   recoverable: boolean;
   context?: {
-    selector?: string;
+    imageTemplate?: string;
     operation?: string;
     screenshot?: string;
     timestamp: number;

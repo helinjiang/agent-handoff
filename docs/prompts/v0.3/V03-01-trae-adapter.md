@@ -2,16 +2,15 @@
 
 ## 任务目标
 
-建立 TRAE 自动化适配器的基础架构，定义 Adapter 接口规范，实现 TRAE Adapter 基类。
+建立 TRAE 自动化适配器的基础架构，定义 Adapter 接口规范，实现基于 Nut.js 的 TRAE Adapter 基类。
 
 ## 上下文
 
-根据 `docs/TECH_SPEC.md` 第 8 节，TRAE 执行端方案演进路线：
-- v0：辅助模式（生成 prompt，用户手动粘贴）
-- v0.2：半自动（剪贴板集成）
-- v0.3：自动模式（UI 自动化）
+鉴于 TRAE 是桌面 IDE，v0.3 采用 Nut.js 进行桌面自动化（键盘/鼠标模拟 + 屏幕视觉识别），而非基于 Web 的 Puppeteer。
 
-本任务为 v0.3 的基础架构搭建，为后续自动化功能提供框架支撑。
+依赖：
+- `@nut-tree/nut-js`
+- `@nut-tree/template-matcher`
 
 参考：
 - `src/core/prompt-generator.ts` - Prompt 生成逻辑
@@ -129,12 +128,12 @@ export abstract class BaseAdapter implements Adapter {
 ```typescript
 import { BaseAdapter, AdapterResult, ExecuteOptions, AdapterType } from '../base';
 import { TraeConfig, DEFAULT_TRAE_CONFIG } from './config';
+// Nut.js imports will be dynamic to avoid load issues in non-desktop envs
 
 export class TraeAdapter extends BaseAdapter {
   readonly type: AdapterType = 'trae';
   private _traeConfig: TraeConfig;
-  private _browser: Browser | null = null;
-  private _page: Page | null = null;
+  private _nutjs: any = null; // 动态加载 Nut.js 实例
 
   constructor(config: Partial<TraeConfig> = {}) {
     super({
@@ -149,11 +148,24 @@ export class TraeAdapter extends BaseAdapter {
     if (!this._config.enabled) {
       return;
     }
-    // 初始化逻辑将在 V03-02 中实现
+    
+    // 动态加载 Nut.js，避免在服务器/CI 环境直接崩溃
+    try {
+      const { mouse, keyboard, screen, imageResource } = await import('@nut-tree/nut-js');
+      this._nutjs = { mouse, keyboard, screen, imageResource };
+      
+      // 配置 Nut.js
+      this._nutjs.screen.config.confidence = this._traeConfig.confidence;
+      this._nutjs.keyboard.config.autoDelayMs = this._traeConfig.typingDelay;
+      
+      this._initialized = true;
+    } catch (error) {
+      throw new Error(`Failed to load Nut.js: ${(error as Error).message}`);
+    }
   }
 
   async isReady(): Promise<boolean> {
-    return this._initialized && this._browser !== null;
+    return this._initialized && this._nutjs !== null;
   }
 
   async execute(prompt: string, options?: ExecuteOptions): Promise<AdapterResult> {
@@ -167,6 +179,14 @@ export class TraeAdapter extends BaseAdapter {
       };
     }
 
+    if (!await this.isReady()) {
+      return {
+        success: false,
+        error: 'Adapter not initialized',
+        duration: Date.now() - startTime,
+      };
+    }
+
     // 执行逻辑将在 V03-03 中实现
     return {
       success: true,
@@ -175,11 +195,7 @@ export class TraeAdapter extends BaseAdapter {
   }
 
   async cleanup(): Promise<void> {
-    if (this._browser) {
-      await this._browser.close();
-      this._browser = null;
-      this._page = null;
-    }
+    this._nutjs = null;
     this._initialized = false;
   }
 }
@@ -194,9 +210,12 @@ export interface TraeConfig {
   retries: number;
   screenshot: boolean;
   screenshotDir: string;
-  headless: boolean;
-  connectToExisting: boolean;
-  traeUrl: string;
+  
+  // Nut.js 特定配置
+  confidence: number;       // 图像匹配置信度 (0-1)
+  typingDelay: number;      // 打字延迟 (ms)
+  templateDir: string;      // 图像模板目录
+  appName: string;          // 应用名称 (用于激活窗口)
 }
 
 export const DEFAULT_TRAE_CONFIG: TraeConfig = {
@@ -205,26 +224,29 @@ export const DEFAULT_TRAE_CONFIG: TraeConfig = {
   retries: 3,
   screenshot: false,
   screenshotDir: 'screenshots',
-  headless: false,
-  connectToExisting: true,
-  traeUrl: 'http://localhost:3000',
+  
+  confidence: 0.8,
+  typingDelay: 10,
+  templateDir: 'templates/trae',
+  appName: 'Trae', // macOS: Trae, Windows: Trae.exe
 };
 ```
 
 ### 5. TRAE 类型定义 (src/adapters/trae/types.ts)
 
 ```typescript
-export interface TraeUIElement {
-  selector: string;
-  alternativeSelectors: string[];
+export interface VisualElement {
+  id: string;
+  imageTemplate: string; // 图像模板文件名
   description: string;
-  waitStrategy: 'visible' | 'attached' | 'hidden';
+  role: 'button' | 'input' | 'indicator';
 }
 
 export interface TraeOperation {
-  type: 'click' | 'fill' | 'wait' | 'screenshot' | 'navigate';
-  target: string;
+  type: 'click' | 'type' | 'hotkey' | 'wait' | 'screenshot' | 'activate';
+  target?: string;
   value?: string;
+  modifiers?: string[]; // ['command', 'shift']
   timestamp: number;
 }
 
@@ -259,32 +281,26 @@ src/
 │       ├── index.ts
 │       ├── types.ts
 │       ├── config.ts
-│       ├── ui-elements.ts    # V03-02
-│       ├── auto-input.ts     # V03-03
-│       ├── operation-logger.ts # V03-04
-│       └── error-recovery.ts # V03-05
+│       ├── visual-elements.ts # V03-02 (替换 ui-elements)
+│       ├── auto-input.ts      # V03-03
+│       ├── operation-logger.ts
+│       └── error-recovery.ts
 ├── core/
 └── cli/
 ```
 
 ## 实现要点
 
-1. **接口隔离**
-   - Adapter 接口定义在 `src/adapters/base.ts`
-   - TRAE 特有逻辑在 `src/adapters/trae/` 目录
-   - 不在 core 中引入 Puppeteer 依赖
+1. **动态加载**
+   - `@nut-tree/nut-js` 包含原生依赖，在 CI/CD 或纯服务器环境可能无法加载
+   - 使用 `import()` 动态加载，确保 CLI 在无 GUI 环境也能运行（辅助模式）
 
-2. **懒加载**
-   - Puppeteer 仅在需要时加载
-   - 使用动态 import 减少启动时间
+2. **跨平台兼容**
+   - 快捷键差异（Command vs Control）需要处理
+   - 应用激活方式在不同 OS 上可能不同
 
-3. **配置优先级**
-   - 默认配置 < 配置文件 < 命令行参数
-
-4. **生命周期管理**
-   - initialize：初始化浏览器连接
-   - execute：执行自动化操作
-   - cleanup：清理资源
+3. **配置集成**
+   - 允许用户自定义 `templateDir`，以适应不同分辨率/主题
 
 ## 配置集成
 
@@ -295,140 +311,22 @@ export interface AgentHandoffConfig {
   // ... 现有配置 ...
   automation?: {
     enabled: boolean;
-    provider: 'puppeteer';
+    provider: 'nutjs';
     screenshot: boolean;
     timeout: number;
     retries: number;
+    confidence?: number;
   };
 }
-
-export const DEFAULT_CONFIG: AgentHandoffConfig = {
-  // ... 现有默认值 ...
-  automation: {
-    enabled: false,
-    provider: 'puppeteer',
-    screenshot: false,
-    timeout: 30000,
-    retries: 3,
-  },
-};
-```
-
-## CLI 集成准备
-
-更新 `src/cli/commands/next.ts`：
-
-```typescript
-import { TraeAdapter } from '../../adapters/trae';
-
-export const nextCommand = new Command('next')
-  .description('输出下一步执行指令和 prompt')
-  .argument('[workspace]', 'workspace 路径', '.')
-  .option('-c, --copy', '复制 prompt 到剪贴板')
-  .option('--auto', '启用自动化模式')
-  .option('--screenshot', '自动截图')
-  .action(async (workspace: string, options: NextOptions) => {
-    // ... 现有逻辑 ...
-
-    if (options.auto) {
-      const adapter = new TraeAdapter({
-        enabled: true,
-        screenshot: options.screenshot,
-      });
-      
-      try {
-        await adapter.initialize();
-        const result = await adapter.execute(prompt, {
-          workspacePath: workspace,
-          stepId: step.id,
-          screenshot: options.screenshot,
-        });
-        
-        if (result.success) {
-          console.log('✅ Prompt submitted automatically');
-        } else {
-          console.log(`⚠️  Automation failed: ${result.error}`);
-          console.log('📋 Falling back to assisted mode');
-          console.log(prompt);
-        }
-      } finally {
-        await adapter.cleanup();
-      }
-    } else {
-      // 现有辅助模式逻辑
-      console.log(prompt);
-    }
-  });
 ```
 
 ## 验收标准
 
-1. adapters 目录结构正确创建
-2. Adapter 接口定义清晰完整
-3. BaseAdapter 实现了通用逻辑（重试、延迟）
-4. TraeAdapter 基本框架可编译
-5. 配置集成到 config.ts
-6. 单元测试覆盖基础逻辑
-
-## 测试用例
-
-```typescript
-import { describe, it, expect } from 'vitest';
-import { BaseAdapter, AdapterType } from '../../../src/adapters/base';
-
-describe('BaseAdapter', () => {
-  class TestAdapter extends BaseAdapter {
-    readonly type: AdapterType = 'manual';
-    
-    async initialize() { this._initialized = true; }
-    async isReady() { return this._initialized; }
-    async execute() { return { success: true, duration: 0 }; }
-    async cleanup() { this._initialized = false; }
-  }
-
-  it('should create adapter with default config', () => {
-    const adapter = new TestAdapter({});
-    expect(adapter.config.enabled).toBe(false);
-    expect(adapter.config.timeout).toBe(30000);
-    expect(adapter.config.retries).toBe(3);
-  });
-
-  it('should merge config correctly', () => {
-    const adapter = new TestAdapter({ enabled: true, timeout: 5000 });
-    expect(adapter.config.enabled).toBe(true);
-    expect(adapter.config.timeout).toBe(5000);
-    expect(adapter.config.retries).toBe(3);
-  });
-
-  it('should retry on failure', async () => {
-    const adapter = new TestAdapter({ retries: 2 });
-    let attempts = 0;
-    
-    await adapter['withRetry'](async () => {
-      attempts++;
-      if (attempts < 2) throw new Error('fail');
-      return 'success';
-    });
-    
-    expect(attempts).toBe(2);
-  });
-});
-
-describe('TraeAdapter', () => {
-  it('should be disabled by default', () => {
-    const adapter = new TraeAdapter();
-    expect(adapter.config.enabled).toBe(false);
-  });
-
-  it('should return disabled error when not enabled', async () => {
-    const adapter = new TraeAdapter();
-    const result = await adapter.execute('test prompt');
-    expect(result.success).toBe(false);
-    expect(result.error).toBe('Adapter is disabled');
-  });
-});
-```
+1. Adapter 接口定义清晰
+2. TraeAdapter 能动态加载 Nut.js
+3. 配置项包含 Nut.js 必要参数
+4. 单元测试（Mock Nut.js）通过
 
 ## 执行指令
 
-请按照上述要求实现 TRAE Adapter 基础架构，创建必要的目录结构和文件，确保接口定义清晰、可扩展。
+请按照上述要求实现 TRAE Adapter 基础架构。
